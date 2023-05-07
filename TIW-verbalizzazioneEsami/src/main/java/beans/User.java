@@ -1,10 +1,10 @@
 package beans;
 
 public class User {
-	private int matricola;
+	private String matricola;
 	private String role;
 
-	public int getMatricola() {
+	public String getMatricola() {
 		return matricola;
 	}
 
@@ -12,7 +12,7 @@ public class User {
 		return role;
 	}
 	
-	public void setMatricola(int m) {
+	public void setMatricola(String m) {
 		 matricola = m;
 	}
 

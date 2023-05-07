@@ -67,6 +67,7 @@ public class CheckLogin extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "mmFailure in database credential checking");
 			return;
 		}
+		
 		if(u == null) {
 			try {
 				u = usr.checkCredentialsStudent(usrn, pwd);
