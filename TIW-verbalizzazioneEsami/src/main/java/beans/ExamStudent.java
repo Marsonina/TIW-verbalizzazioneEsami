@@ -1,6 +1,6 @@
 package beans;
 
-public class EnrolledStudent {
+public class ExamStudent{
 	private int matricola;
 	private String name;
 	private String surname;

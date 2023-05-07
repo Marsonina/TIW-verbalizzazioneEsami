@@ -1,6 +1,6 @@
 package beans;
 
-public class ExamDate{
+public class Exam{
 	private String date;
 
 	public String getDate() {
