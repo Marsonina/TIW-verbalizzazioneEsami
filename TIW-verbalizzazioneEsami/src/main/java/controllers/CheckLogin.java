@@ -51,32 +51,27 @@ public class CheckLogin extends HttpServlet {
 			throws ServletException, IOException {
 		String usrn = request.getParameter("username");
 		String pwd = request.getParameter("pwd");
+		String role = request.getParameter("role");
 		
-		if (usrn == null || usrn.isEmpty() || pwd == null || pwd.isEmpty()) {
+		/*if (usrn == null || usrn.isEmpty() || pwd == null || pwd.isEmpty() || role == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
 			return;
-		}
+		}*/
 		
 		UserDAO usr = new UserDAO(connection);
 		User u = null;
 		try {
-			u = usr.checkCredentialsTeacher(usrn, pwd);
+			if(role.equals("teacher"))
+				u = usr.checkCredentialsTeacher(usrn, pwd);
+			else if(role.equals("student"))
+				u = usr.checkCredentialsStudent(usrn, pwd);
 
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in database credential checking");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in database credential checking"+" "+role);
 			return;
 		}
 		
-		if(u == null) {
-			try {
-				u = usr.checkCredentialsStudent(usrn, pwd);
-			} catch (SQLException e) {
-				// throw new ServletException(e);
-				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in database credential checking");
-				return;
-			}	
-		}
 		
 		String path = getServletContext().getContextPath();
 		if (u == null) {
