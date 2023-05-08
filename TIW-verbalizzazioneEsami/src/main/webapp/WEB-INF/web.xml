@@ -17,6 +17,31 @@
     <param-name>dbDriver</param-name>
     <param-value>com.mysql.cj.jdbc.Driver</param-value>
   </context-param>
+  <filter> 
+    <filter-name>Checker</filter-name>
+    <filter-class>filters.Checker</filter-class> 
+ </filter>
+ <filter> 
+    <filter-name>TeacherChecker</filter-name>
+    <filter-class>filters.TeacherChecker</filter-class> 
+ </filter>
+ <filter> 
+    <filter-name>StudentChecker</filter-name>
+    <filter-class>filters.StudentChecker</filter-class> 
+ </filter>
+ <filter-mapping> 
+    <filter-name>Checker</filter-name> 
+    <url-pattern>/GoToHomeTeacher</url-pattern> 
+    <url-pattern>/GoToHomeStudent</url-pattern> 
+ </filter-mapping>
+ <filter-mapping> 
+    <filter-name>TeacherChecker</filter-name>
+    <url-pattern>/GoToHomeTeacher</url-pattern> 
+ </filter-mapping>
+ <filter-mapping> 
+    <filter-name>StudentChecker</filter-name>
+    <url-pattern>/GoToHomeStudent</url-pattern> 
+ </filter-mapping>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>

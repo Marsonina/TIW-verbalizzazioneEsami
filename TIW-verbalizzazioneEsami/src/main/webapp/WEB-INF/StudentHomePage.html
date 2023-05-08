@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
 <title>Student Home Page</title>
+<link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
 </head>
 <body>
+	<div align="right">
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
 	<h1>Welcome to Student home page</h1>
+	
 </body>
 </html>
