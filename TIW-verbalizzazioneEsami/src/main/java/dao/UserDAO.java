@@ -25,8 +25,8 @@ public class UserDAO {
 				else {
 					result.next();
 					User user = new User();
-					user.setMatricola(result.getInt("id"));
-					user.setRole(result.getString("teacher"));
+					user.setMatricola(result.getString("matricola"));
+					user.setRole("teacher");
 					return user;
 				}
 			}
@@ -43,8 +43,8 @@ public class UserDAO {
 				else {
 					result.next();
 					User user = new User();
-					user.setMatricola(result.getInt("id"));
-					user.setRole(result.getString("student"));
+					user.setMatricola(result.getString("matricola"));
+					user.setRole("student");
 					return user;
 				}
 			}
