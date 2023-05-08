@@ -64,7 +64,7 @@ public class CheckLogin extends HttpServlet {
 
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "mmFailure in database credential checking");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in database credential checking");
 			return;
 		}
 		
@@ -73,7 +73,7 @@ public class CheckLogin extends HttpServlet {
 				u = usr.checkCredentialsStudent(usrn, pwd);
 			} catch (SQLException e) {
 				// throw new ServletException(e);
-				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "kkFailure in database credential checking");
+				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in database credential checking");
 				return;
 			}	
 		}

@@ -3,7 +3,7 @@
   <display-name>TIW-verbalizzazioneEsami</display-name>
   <context-param>
     <param-name>dbUrl</param-name>
-    <param-value>jdbc:mysql://localhost:3306/dbtest?serverTimezone=UTC</param-value>
+    <param-value>jdbc:mysql://localhost:3306/dbverbalizzazione</param-value>
   </context-param>
   <context-param>
     <param-name>dbUser</param-name>
