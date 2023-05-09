@@ -3,14 +3,63 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Student Home Page</title>
-<link rel="stylesheet" type="text/css" media="all"
-	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
 </head>
 <body>
 	<div align="right">
+		<span th:text="${session.user.name}">BARBARA</span>
+		<span th:text="${session.user.surname}">LISKOV</span>
+		<span th:text="${session.user.matricola}">123456</span>
 		<a th:href="@{/Logout}">Logout</a>
 	</div>
-	<h1>Welcome to Student home page</h1>
+	<div align="right">
+		<span th:text="${session.user.role}">Student</span>
+	</div>
+	<hr>
+	<div align="left">
+		<h1>Polimi servizi online</h1>
+	</div>
+	<p>
+		Select a course and choose an exam date
+	</p>
+	<table>
+		<tr>
+			<td>
+				<table border="1">
+					<thead>
+						<tr>
+							<th>Course ID</th>
+							<th>Course Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="c : ${courses}" th:class="(${c.id} == ${courseid})? 'current'">
+							<td th:text="${c.id}"></td>
+							<td><a href="SudentHome.html" th:href="@{/GoToStudentPage(courseid=${c.id})}">
+								<span th:text="${c.name}"></span></a></td>
+						</tr>
+					</tbody>
+				</table>
+			</td>
+			<td>
+				<div th:if="${#lists.isEmpty(exams)}">
+					No exam date for this course
+					 <span th:text="${courseid}"></span>
+				</div>
+				<div th:if="${not #lists.isEmpty(exams)}">
+					<form th:action="@{/GoToResultPage}" method="POST">
+						Choose an exam date <span th:text="${courseid}"></span>:
+						<br> 
+						<select name="examDate">
+							<option th:each="e : ${exams}" th:value="${e.date}"
+								th:text="${e.date}">xxx</option>
+						</select> 
+						<hr>
+						<input type="submit" name="submit" value="View result">
+					</form>
+				</div>
+			</td>
+		</tr>
+	</table>
 	
 </body>
 </html>
