@@ -54,14 +54,12 @@ public class GoToHomeStudent extends HttpServlet {
 		
 		try {
 			courses = sDao.getCourses();
-			if (chosenCourse == null) {
-				//only print all courses
-			} else {
+			if (chosenCourse != null) { //non ho messo il caso base in cui chosen project è null e vengono semplicemnete visualizzati
 				chosenCourseId = Integer.parseInt(chosenCourse);
 			}
-			/*ExamDAO pDao = new ExamDAO(connection, chosenProjectId);
-			if(pDao.findProject() == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with project choice");
+			/*
+			if(sDao.getExamDates() == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
 				return;
 			}
 			User owner = pDao.findOwner();
