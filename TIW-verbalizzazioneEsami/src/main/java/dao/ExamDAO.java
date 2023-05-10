@@ -11,7 +11,7 @@ public class ExamDAO {
 	private int courseId;
 	private String chosenDate;
 	
-	
+	//constructor
 	public ExamDAO(Connection connection, int courseId, String chosenDate) {
 		this.connection = connection;
 		this.chosenDate = chosenDate;
