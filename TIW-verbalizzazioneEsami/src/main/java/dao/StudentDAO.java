@@ -20,7 +20,7 @@ public class StudentDAO {
 
 	public List<Course> getCourses() throws SQLException {
 		List<Course> courses = new ArrayList<Course>();
-		String query = "SELECT id, name FROM course JOIN course_students  WHERE courseId = id, matricolaStudent = ?";
+		String query = "SELECT id, name FROM course, course_students  WHERE courseId = id AND matricolaStudent = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1, this.matricola);
 			try (ResultSet result = pstatement.executeQuery();) {
@@ -32,24 +32,24 @@ public class StudentDAO {
 				}
 			}
 		}
-	return courses;
+		return courses;
 	}
 	
-	public List<Exam> getExamDates(String chosenCourse) throws SQLException {
+	public List<Exam> getExamDates(int chosenCourseId) throws SQLException {
 		List<Exam> exams = new ArrayList<Exam>();
-		String query = "SELECT date FROM exam_date JOIN course WHERE courseId = id, id = ?";
+		String query = "SELECT examDate FROM exam_students WHERE courseId = ? AND matricolaStudent = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-			pstatement.setString(1, chosenCourse);
+			pstatement.setInt(1, chosenCourseId);
+			pstatement.setString(2,  this.matricola);
 			try (ResultSet result = pstatement.executeQuery();) {
 				while (result.next()) {
-					Course course = new Course();
-					course.setCourseId(result.getInt("id"));
-					course.setCourseName(result.getString("name"));
-					courses.add(course);
+					Exam exam = new Exam();
+					exam.setDate(result.getString("examDate"));
+					exams.add(exam);
 				}
 			}
 		}
-	return courses;
+	return exams;
 	}
 	
 }

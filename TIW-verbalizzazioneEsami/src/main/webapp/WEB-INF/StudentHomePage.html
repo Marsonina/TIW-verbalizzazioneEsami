@@ -8,7 +8,7 @@
 	<div align="right">
 		<span th:text="${session.user.name}">BARBARA</span>
 		<span th:text="${session.user.surname}">LISKOV</span>
-		<span th:text="${session.user.matricola}">123456</span>
+		<span th:text="${session.user.matricola}">-----</span>
 		<a th:href="@{/Logout}">Logout</a>
 	</div>
 	<div align="right">
@@ -32,29 +32,32 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="c : ${courses}" th:class="(${c.id} == ${courseid})? 'current'">
-							<td th:text="${c.id}"></td>
-							<td><a href="SudentHome.html" th:href="@{/GoToStudentPage(courseid=${c.id})}">
-								<span th:text="${c.name}"></span></a></td>
+					<tr th:each="c : ${courses}">
+							<td th:text="${c.courseId}"></td>
+							<td><a href="StudentHomePage.html"
+								th:href="@{/GoToHomeStudent(courseId=${c.courseId})}"><span
+									th:text="${c.courseName}"></span></a></td>
 						</tr>
 					</tbody>
 				</table>
 			</td>
 			<td>
-				<div th:if="${#lists.isEmpty(exams)}">
-					No exam date for this course
-					 <span th:text="${courseid}"></span>
+				<div th:if="${courseId==0}">
+					Please select a course
+				</div>
+				<div th:if="${#lists.isEmpty(exams) and courseId != 0}">
+					No exam date for course number <span th:text="${courseId}"></span>
 				</div>
 				<div th:if="${not #lists.isEmpty(exams)}">
-					<form th:action="@{/GoToResultPage}" method="POST">
-						Choose an exam date <span th:text="${courseid}"></span>:
+					<form th:action="@{/GoToModifyPage}" method="POST">
+						Choose an exam date for course number <span th:text="${courseId}"></span>:
 						<br> 
 						<select name="examDate">
 							<option th:each="e : ${exams}" th:value="${e.date}"
 								th:text="${e.date}">xxx</option>
 						</select> 
 						<hr>
-						<input type="submit" name="submit" value="View result">
+						<input type="submit" name="submit" value="View results">
 					</form>
 				</div>
 			</td>
@@ -62,4 +65,4 @@
 	</table>
 	
 </body>
-</html> 
+</html>

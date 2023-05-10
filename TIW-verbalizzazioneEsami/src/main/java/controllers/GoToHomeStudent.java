@@ -21,7 +21,6 @@ import beans.Course;
 import beans.Exam;
 import beans.User;
 import dao.StudentDAO;
-import it.polimi.tiw.projects.dao.ProjectDAO;
 import utility.DbConnection;
 import utility.Templating;
 
@@ -54,30 +53,35 @@ public class GoToHomeStudent extends HttpServlet {
 		
 		try {
 			courses = sDao.getCourses();
-			if (chosenCourse != null) { //non ho messo il caso base in cui chosen project è null e vengono semplicemnete visualizzati
+			if (chosenCourse != null) { 
 				chosenCourseId = Integer.parseInt(chosenCourse);
+				exams = sDao.getExamDates(chosenCourseId);
 			}
 			/*
-			if(sDao.getExamDates() == null) {
+			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
+			if(cDao.findCourseStudent() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
 				return;
 			}
-			User owner = pDao.findOwner();
-			if(owner == null || owner.getId() != u.getId()) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-owned project");
+			User currStudent = cDao.findAttendingStudent();
+			if(currStudent == null || currSstudent.getId() != u.getId()) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended course");
 				return;
 			}
-			workers = pDao.findWorkers();
+			*/
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in admin's project database extraction");
-		}*/
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students's exams database extraction");
+		}
 
 		String path = "/WEB-INF/StudentHomePage.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		ctx.setVariable("courses", courses);
+		ctx.setVariable("courseId", chosenCourseId);
+		ctx.setVariable("exams", exams);
 		templateEngine.process(path, ctx, response.getWriter());
-	}
+		}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
