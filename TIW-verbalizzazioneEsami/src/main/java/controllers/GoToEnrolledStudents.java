@@ -42,17 +42,18 @@ public class GoToEnrolledStudents extends HttpServlet {
 			throws ServletException, IOException {
 		HttpSession s = request.getSession();
 		User user = (User) s.getAttribute("user");
-		String selectedDate = request.getParameter("date");
+		String selectedDate = request.getParameter("examDate");
+		selectedDate = "2023-04-15";
 		String selectedCourse = request.getParameter("courseId");
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
-		System.out.println("dd"+selectedDate);
+		System.out.println(selectedDate);
 		try {
 			students = eDao.getStudents();	
 			
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled students database extraction" + selectedDate + selectedCourse);
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled students database extraction");
 		}
 		
 		/*for(int i=0;i<students.size();i++)
@@ -63,7 +64,7 @@ public class GoToEnrolledStudents extends HttpServlet {
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("students", students);
 		ctx.setVariable("courseId",selectedCourse);
-		//ctx.setVariable("examDate", selectedDate);
+		ctx.setVariable("examDate", selectedDate);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
