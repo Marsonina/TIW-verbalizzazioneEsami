@@ -5,6 +5,7 @@ public class ExamStudent{
 	private String name;
 	private String surname;
 	private String email;
+	private String degree;
 	private String result = null;
 	private String resultState = "NON INSERITO";
 
@@ -23,6 +24,11 @@ public class ExamStudent{
 	public String getEmail() {
 		return email;
 	}
+	
+	public String getDegree() {
+		return degree;
+	}
+	
 	
 	public String getResult() {
 		return result;
@@ -54,6 +60,9 @@ public class ExamStudent{
 	
 	public void setResultState(String rs) {
 		resultState = rs;
+	}
+	public void setDegree(String d) {
+		degree = d;
 	}
 
 }
