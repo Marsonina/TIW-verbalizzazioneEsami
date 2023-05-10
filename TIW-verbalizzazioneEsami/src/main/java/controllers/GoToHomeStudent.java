@@ -24,7 +24,7 @@ import dao.StudentDAO;
 import utility.DbConnection;
 import utility.Templating;
 
-
+import dao.CourseDAO;
 
 @WebServlet("/GoToHomeStudent")
 public class GoToHomeStudent extends HttpServlet {
@@ -56,19 +56,20 @@ public class GoToHomeStudent extends HttpServlet {
 			if (chosenCourse != null) { 
 				chosenCourseId = Integer.parseInt(chosenCourse);
 				exams = sDao.getExamDates(chosenCourseId);
+				CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
+				
+				if(cDao.findCourse() == null) {
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
+					return;
+				}
+				List<String> currStudents = cDao.findAttendingStudent();
+				if(currStudents == null || !currStudents.contains(user.getMatricola())) {
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended course");
+					return;
+				}
 			}
-			/*
-			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
-			if(cDao.findCourseStudent() == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
-				return;
-			}
-			User currStudent = cDao.findAttendingStudent();
-			if(currStudent == null || currSstudent.getId() != u.getId()) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended course");
-				return;
-			}
-			*/
+			
+			
 		} catch (SQLException e) {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students's exams database extraction");
@@ -81,7 +82,7 @@ public class GoToHomeStudent extends HttpServlet {
 		ctx.setVariable("courseId", chosenCourseId);
 		ctx.setVariable("exams", exams);
 		templateEngine.process(path, ctx, response.getWriter());
-		}
+	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

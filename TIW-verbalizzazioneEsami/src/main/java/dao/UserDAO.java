@@ -34,7 +34,7 @@ public class UserDAO {
 		}
 	}
 	public User checkCredentialsStudent(String usrn, String pwd) throws SQLException {
-		String query = "SELECT  matricola FROM student  WHERE username = ? AND password =? ";
+		String query = "SELECT  matricola,name,surname FROM student  WHERE username = ? AND password =? ";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, usrn);
 			pstatement.setString(2, pwd);
@@ -46,6 +46,8 @@ public class UserDAO {
 					User user = new User();
 					user.setMatricola(result.getString("matricola"));
 					user.setRole("student");
+					user.setName(result.getString("name"));
+					user.setSurname(result.getString("surname"));
 					return user;
 				}
 			}
