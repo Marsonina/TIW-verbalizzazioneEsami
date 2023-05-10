@@ -43,11 +43,9 @@ public class GoToEnrolledStudents extends HttpServlet {
 		HttpSession s = request.getSession();
 		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
-		selectedDate = "2023-04-15";
 		String selectedCourse = request.getParameter("courseId");
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
-		System.out.println(selectedDate);
 		try {
 			students = eDao.getStudents();	
 			
