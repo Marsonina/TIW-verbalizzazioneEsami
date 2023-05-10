@@ -20,7 +20,7 @@ public class StudentDAO {
 
 	public List<Course> getCourses() throws SQLException {
 		List<Course> courses = new ArrayList<Course>();
-		String query = "SELECT id, name FROM course, course_students  WHERE courseId = id AND matricolaStudent = ?";
+		String query = "SELECT id, name FROM course, course_students  WHERE courseId = id AND matricolaStudent = ? ORDER BY name DESC";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1, this.matricola);
 			try (ResultSet result = pstatement.executeQuery();) {
@@ -37,7 +37,7 @@ public class StudentDAO {
 	
 	public List<Exam> getExamDates(int chosenCourseId) throws SQLException {
 		List<Exam> exams = new ArrayList<Exam>();
-		String query = "SELECT examDate FROM exam_students WHERE courseId = ? AND matricolaStudent = ?";
+		String query = "SELECT examDate FROM exam_students WHERE courseId = ? AND matricolaStudent = ? ORDER BY examDate DESC";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setInt(1, chosenCourseId);
 			pstatement.setString(2,  this.matricola);
