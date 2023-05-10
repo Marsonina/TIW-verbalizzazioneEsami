@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Student Home Page</title>
+<title>Teacher Home Page</title>
 </head>
 <body>
 	<div align="right">
-		<span th:text="${session.user.name}">BARBARA</span>
-		<span th:text="${session.user.surname}">LISKOV</span>
-		<span th:text="${session.user.matricola}">123456</span>
+		<span th:text="${session.user.name}">MARISSA</span>
+		<span th:text="${session.user.surname}">MAYER</span>
+		<span th:text="${session.user.matricola}">-----</span>
 		<a th:href="@{/Logout}">Logout</a>
 	</div>
 	<div align="right">
-		<span th:text="${session.user.role}">Student</span>
+		<span th:text="${session.user.role}">Teacher</span>
 	</div>
 	<hr>
 	<div align="left">
@@ -32,11 +32,11 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="c : ${courses}" th:class="(${c.id} == ${courseid})? 'current'">
-							<td th:text="${c.id}"></td>
-							<td><a href="SudentHome.html" th:href="@{/GoToStudentPage(courseid=${c.id})}">
-								<span th:text="${c.name}"></span></a></td>
-						</tr>
+					    <tr th:each="c : ${courses}">
+					      <td th:text="${c.id}"></td>
+					      <td><a href="SudentHomePage.html" th:href="@{/GoToStudentPage(courseid=${c.id})}">
+					        <span th:text="${c.name}"></span></a></td>
+					    </tr>
 					</tbody>
 				</table>
 			</td>
@@ -46,7 +46,7 @@
 					 <span th:text="${courseid}"></span>
 				</div>
 				<div th:if="${not #lists.isEmpty(exams)}">
-					<form th:action="@{/GoToResultPage}" method="POST">
+					<form th:action="@{/GoToModifyPage}" method="POST">
 						Choose an exam date <span th:text="${courseid}"></span>:
 						<br> 
 						<select name="examDate">
@@ -54,7 +54,7 @@
 								th:text="${e.date}">xxx</option>
 						</select> 
 						<hr>
-						<input type="submit" name="submit" value="View result">
+						<input type="submit" name="submit" value="View students">
 					</form>
 				</div>
 			</td>
