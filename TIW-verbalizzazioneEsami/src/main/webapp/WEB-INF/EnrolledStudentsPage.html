@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Enrolled Students Page</title>
+</head>
+<body>
+	<div align="right">
+		<span th:text="${session.user.name}">MARISSA</span>
+		<span th:text="${session.user.surname}">MAYER</span>
+		<span th:text="${session.user.matricola}">-----</span>
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
+	<div align="right">
+		<span th:text="${session.user.role}">Teacher</span>
+	</div>
+	<hr>
+	<div align="left">
+		<h1>Enrolled students for the selected exam</h1>
+	</div>
+	<p>
+		Course Id: <span th:text="${courseId}">1</span><br>
+		Exam date: <span th:text="${examDate}">2023-01-01</span>
+	</p>
+	<div th:if="${#lists.isEmpty(students)}" align = "center">
+		No enrolled students for the selected exam
+	</div>
+	<table th:if="${not #lists.isEmpty(students)}" align="center">
+		<tr>
+			<td>
+				<table border="1">
+					<thead>
+						<tr>
+							<th>Matricola</th>
+							<th>Name</th>
+							<th>Surname</th>
+							<th>Degree</th>
+							<th>Email</th>
+							<th>Result</th>
+							<th>ResultState</th>
+							<th>Modify</th>
+						</tr>
+					</thead>
+					<tbody>
+					<tr th:each="s : ${students}">
+							<td th:text="${s.matricola}">111111</td>
+							<td th:text="${s.name}">name</td>
+							<td th:text="${s.surname}">surname</td>
+							<td th:text="${s.degree}">degree</td>
+							<td th:text="${s.email}">nome.cognome@polimi.it</td>
+							<td th:text="${s.result}"></td>
+							<td th:text="${s.resultState}">NON INSERITO</td>		
+							<td><form th:action="@{/GoToModifyPage(matricola=${s.matricola})}" method="POST">
+    							<button type="submit" class="btn btn-primary">Modify</button>
+							</form><td>
+					</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br>
+	<div th:if="${not #lists.isEmpty(students)}" align="center">
+		<form th:action="@{/ToPublish}" method="POST" >
+   			<button type="submit" class="btn btn-primary">Publish</button>
+		</form>
+		<br>
+		<form th:action="@{/ToVerbalize}" method="POST" >
+   			<button type="submit" class="btn btn-primary">Verbalize</button>
+		</form>
+	</div>
+	
+</body>
+</html>

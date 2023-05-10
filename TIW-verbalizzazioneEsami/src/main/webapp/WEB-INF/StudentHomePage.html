@@ -49,7 +49,7 @@
 					No exam date for course number <span th:text="${courseId}"></span>
 				</div>
 				<div th:if="${not #lists.isEmpty(exams)}">
-					<form th:action="@{/ExamResult(date=${examDate})}" method="POST">
+					<form th:action="@{/ExamResult(date=${examDate}, courseId = ${courseId})}" method="POST">
 						Choose an exam date for course number <span th:text="${courseId}"></span>:
 						<br> 
 						<select name="examDate">
