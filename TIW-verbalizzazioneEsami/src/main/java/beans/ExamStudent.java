@@ -1,14 +1,15 @@
 package beans;
 
 public class ExamStudent{
-	private int matricola;
+	private String matricola;
 	private String name;
 	private String surname;
 	private String email;
+	private String degree;
 	private String result = null;
 	private String resultState = "non iserito";
 
-	public int getMatricola() {
+	public String getMatricola() {
 		return matricola;
 	}
 
@@ -24,6 +25,11 @@ public class ExamStudent{
 		return email;
 	}
 	
+	public String getDegree() {
+		return degree;
+	}
+	
+	
 	public String getResult() {
 		return result;
 	}
@@ -32,7 +38,7 @@ public class ExamStudent{
 		return resultState;
 	}
 	
-	public void setMatricola(int m) {
+	public void setMatricola(String m) {
 		 matricola = m;
 	}
 
@@ -54,6 +60,9 @@ public class ExamStudent{
 	
 	public void setResultState(String rs) {
 		resultState = rs;
+	}
+	public void setDegree(String d) {
+		degree = d;
 	}
 
 }
