@@ -19,6 +19,7 @@ import org.thymeleaf.context.WebContext;
 
 import beans.Course;
 import beans.Exam;
+import beans.ExamStudent;
 import beans.User;
 import dao.StudentDAO;
 import utility.DbConnection;
@@ -50,9 +51,10 @@ public class ExamResult extends HttpServlet {
 		int chosenCourseId = Integer.parseInt(chosenCourse);
 		String chosenExam = request.getParameter("examDate");
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
-		/*try {
-			/*courses = sDao.getCourses();
-			if (chosenCourse != null) { 
+		try {
+			ExamStudent examStudent = new ExamStudent();
+			examStudent = eDao.getResult(user.getMatricola());
+			if (examStudent.getResultState() == "NON INSERITO") { 
 				exams = sDao.getExamDates(chosenCourseId);
 				CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
 				
@@ -70,16 +72,16 @@ public class ExamResult extends HttpServlet {
 			
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students's exams database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students's infos database extraction");
 		}
 
 		String path = "/WEB-INF/StudentHomePage.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		/*ctx.setVariable("courses", courses);
+		ctx.setVariable("courses", courses);
 		ctx.setVariable("courseId", chosenCourseId);
 		ctx.setVariable("exams", exams);
-		templateEngine.process(path, ctx, response.getWriter());*/
+		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
