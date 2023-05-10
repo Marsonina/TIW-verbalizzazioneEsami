@@ -22,6 +22,7 @@ import beans.Exam;
 import beans.User;
 import dao.CourseDAO;
 import dao.StudentDAO;
+import dao.TeacherDAO;
 import utility.DbConnection;
 import utility.Templating;
 
@@ -46,16 +47,16 @@ public class GoToHomeTeacher extends HttpServlet {
 		HttpSession s = request.getSession();
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
-		StudentDAO sDao = new StudentDAO(connection, user.getMatricola());
+		TeacherDAO tDao = new TeacherDAO(connection, user.getMatricola());
 		List<Course> courses = new ArrayList<Course>();
 		List<Exam> exams = new ArrayList<Exam>();
 		int chosenCourseId = 0;
 		
 		try {
-			courses = sDao.getCourses();
+			courses = tDao.getCourses();
 			if (chosenCourse != null) { 
 				chosenCourseId = Integer.parseInt(chosenCourse);
-				exams = sDao.getExamDates(chosenCourseId);
+				exams = tDao.getExamDates(chosenCourseId);
 				CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
 				
 				if(cDao.findCourse() == null) {
@@ -74,7 +75,7 @@ public class GoToHomeTeacher extends HttpServlet {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
-
+		
 		String path = "/WEB-INF/TeacherHomePage.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
