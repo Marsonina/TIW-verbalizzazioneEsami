@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Exam Result Pages</title>
+</head>
+<body>
+	<div align="right">
+		<span th:text="${session.user.name}">BARBARA</span>
+		<span th:text="${session.user.surname}">LISKOV</span>
+		<span th:text="${session.user.matricola}">-----</span>
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
+	<div align="right">
+		<span th:text="${session.user.role}">Student</span>
+	</div>
+	<hr>
+	<fieldset>
+	<!-- ricorda di non aver inserito il nome del corso -->
+	<p>
+	Matricola: <span th:text="${session.user.matricola}">123456</span>
+	</p>
+	<p>
+	Nome: <span th:text="${examStudent.name}">BARBARA</span>
+	</p>
+	<p>
+	Cognome: <span th:text="${examStudent.surname}">LISKOV</span>
+	</p>
+	<p>
+	Degree: <span th:text="${examStudent.degree}">Computer Engineering</span>
+	</p>
+	<p>
+	Email: <span th:text="${examStudent.email}">Computer Engineering</span>
+	</p>
+	<p>
+	Result: <span th:text="${examStudent.result}">20</span>
+	</p>
+	<p>
+	ResultState: <span th:text="${examStudent.degree}">PUBBLICATO</span>
+	</p>
+	</fieldset>
+	<br>
+	<div align="center">
+	<input type="submit" name="submit" value="Refuse mark">
+	</div>
+</body>
+</html>

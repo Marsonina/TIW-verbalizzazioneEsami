@@ -6,8 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import beans.ExamStudent;
-import beans.User;
-import it.polimi.tiw.projects.beans.Project; 
 
 public class ExamDAO {
 	private Connection connection;
@@ -21,19 +19,23 @@ public class ExamDAO {
 		this.chosenDate = chosenDate;
 	}
 	
-	public ExamStudent getResult() throws SQLException{
+	public ExamStudent getResult(String matricola) throws SQLException{
 		ExamStudent examStudent = null;
-		String query = "SELECT matricola, name, surname, degree, email, result, resultState FROM student, exam_students WHERE matricolaEnrolled = matricola AND examCourseId = ? AND examDate = ?";
+		String query = "SELECT matricola, name, surname, degree, email, result, resultState FROM student, exam_students WHERE matricolaEnrolled = matricola AND matricola = ? AND examCourseId = ? AND examDate = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-			pstatement.setInt(1, this.courseId);
-			pstatement.setString(2,  chosenDate);
+			pstatement.setString(1, matricola);
+			pstatement.setInt(2, this.courseId);
+			pstatement.setString(3, this.chosenDate);
 			try (ResultSet result = pstatement.executeQuery();) {
 				if (result.next()) {
 					examStudent = new ExamStudent();
 					examStudent.setMatricola(result.getString("matricola"));
 					examStudent.setName(result.getString("name"));
 					examStudent.setSurname(result.getString("surname"));
-					
+					examStudent.setDegree(result.getString("degree"));
+					examStudent.setEmail(result.getString("email"));
+					examStudent.setResult(result.getString("result"));
+					examStudent.setResultState(result.getString("resultState"));
 				}
 			}
 		}
