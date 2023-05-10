@@ -46,7 +46,7 @@ public class GoToHomeTeacher extends HttpServlet {
 		HttpSession s = request.getSession();
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
-		StudentDAO sDao = new StudentDAO(connection, user.getMatricola());
+		StudentDAO sDao = new TeacherDAO(connection, user.getMatricola());
 		List<Course> courses = new ArrayList<Course>();
 		List<Exam> exams = new ArrayList<Exam>();
 		int chosenCourseId = 0;
