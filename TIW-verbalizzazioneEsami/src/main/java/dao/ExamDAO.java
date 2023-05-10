@@ -22,7 +22,8 @@ public class ExamDAO {
 	
 	public ExamStudent getResult(String matricola) throws SQLException{
 		ExamStudent examStudent = null;
-		String query = "SELECT matricola, name, surname, degree, email, result, resultState FROM student, exam_students WHERE matricolaEnrolled = matricola AND matricola = ? AND examCourseId = ? AND examDate = ?";
+		String query = "SELECT matricola, name, surname, degree, email, result, resultState FROM student, exam_students"
+				+ " WHERE matricolaStudent = matricola AND matricola = ? AND courseId = ? AND examDate = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1, matricola);
 			pstatement.setInt(2, this.courseId);

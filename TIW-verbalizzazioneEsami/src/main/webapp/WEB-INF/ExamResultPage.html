@@ -15,6 +15,7 @@
 		<span th:text="${session.user.role}">Student</span>
 	</div>
 	<hr>
+	<div th:if="${examStudent.resultState != 'NON INSERITO'}">
 	<fieldset>
 	<!-- ricorda di non aver inserito il nome del corso -->
 	<p>
@@ -36,12 +37,24 @@
 	Result: <span th:text="${examStudent.result}">20</span>
 	</p>
 	<p>
-	ResultState: <span th:text="${examStudent.degree}">PUBBLICATO</span>
+	ResultState: <span th:text="${examStudent.resultState}">PUBBLICATO</span>
 	</p>
 	</fieldset>
+	
 	<br>
+	
 	<div align="center">
+	<form th:action="@{/ToRefuse}" method="POST">
 	<input type="submit" name="submit" value="Refuse mark">
+	</form>
 	</div>
+	
+	</div>
+
+	
+	<div th:if="${examStudent.resultState == 'NON INSERITO'}"  align="center" >
+		Voto non ancora definito
+	</div>
+	
 </body>
 </html>
