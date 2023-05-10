@@ -7,7 +7,7 @@ public class ExamStudent{
 	private String email;
 	private String degree;
 	private String result = null;
-	private String resultState = "non iserito";
+	private String resultState = "NON INSERITO";
 
 	public String getMatricola() {
 		return matricola;
