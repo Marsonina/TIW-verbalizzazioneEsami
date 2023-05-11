@@ -21,7 +21,9 @@ import beans.User;
 import utility.DbConnection;
 import utility.Templating;
 import beans.ExamStudent;
+import dao.CourseDAO;
 import dao.ExamDAO;
+import dao.CourseDAO;
 
 @WebServlet("/GoToEnrolledStudents")
 public class GoToEnrolledStudents extends HttpServlet {
@@ -40,10 +42,47 @@ public class GoToEnrolledStudents extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		HttpSession s = request.getSession();
+		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
 		String selectedCourse = request.getParameter("courseId");
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
+
+		try {
+			 
+			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
+			
+			if(cDao.findCourse() == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
+				return;
+			}
+			String currTeacher = cDao.findOwnerTeacher();
+			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-own course");
+				return;
+			}
+			
+			
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+		}
+		
+		try {
+			 
+			ExamDAO exDao = new ExamDAO(connection,Integer.parseInt(selectedCourse) ,selectedDate );
+			
+			if(exDao.findExam() == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
+				return;
+			}
+
+			
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+		}
+		
+		
 		try {
 			students = eDao.getStudents();	
 			
@@ -51,10 +90,6 @@ public class GoToEnrolledStudents extends HttpServlet {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled students database extraction");
 		}
-		
-		/*for(int i=0;i<students.size();i++)
-			System.out.println(students.get(i).getMatricola());*/
-		
 		String path = "/WEB-INF/EnrolledStudentsPage.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
