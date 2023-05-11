@@ -15,6 +15,10 @@
 		<span th:text="${session.user.role}">Student</span>
 	</div>
 	<hr>
+	<p>
+		Course Id: <span th:text="${courseId}">1</span><br>
+		Exam date: <span th:text="${examDate}">2023-01-01</span>
+	</p>
 	<div th:if="${examStudent.resultState != 'NON INSERITO'}">
 	<fieldset>
 	<!-- ricorda di non aver inserito il nome del corso -->
@@ -53,6 +57,7 @@
 
 	
 	<div th:if="${examStudent.resultState == 'NON INSERITO'}"  align="center" >
+	<hr>
 		Voto non ancora definito
 	</div>
 	
