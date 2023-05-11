@@ -8,6 +8,8 @@ import beans.ExamStudent;
 import java.util.ArrayList;
 import java.util.List;
 
+import beans.Course;
+import beans.Exam;
 public class ExamDAO {
 	private Connection connection;
 	private int courseId;
@@ -71,4 +73,42 @@ public class ExamDAO {
 		}
 		return users;
 	}
+	
+	public Exam findExam() throws SQLException{
+		String query= "SELECT date FROM exam WHERE courseId = ? AND date = ?";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setInt(1, courseId);
+			pstatement.setString(2, chosenDate);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst())
+					return null;
+				else {
+					result.next();
+					Exam exam = new Exam();
+					exam.setDate(result.getString("date"));
+					return exam;
+				}
+			}
+		}		
+	}
+	
+	public List<String> findExamStudent() throws SQLException{
+		List<String> users = new ArrayList<String>();
+		String query= "SELECT matricolaStudent FROM exam_students WHERE courseId = ? AND examDate = ?";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setInt(1, courseId);
+			pstatement.setString(2, chosenDate);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst())
+					return null;
+				else {
+					while(result.next()) {
+						users.add(result.getString("matricolaStudent"));
+					}
+				}
+			}
+		}
+		return users;
+	}
+
 }

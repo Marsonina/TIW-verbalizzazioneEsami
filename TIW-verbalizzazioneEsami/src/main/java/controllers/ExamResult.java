@@ -3,6 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -19,7 +20,7 @@ import beans.ExamStudent;
 import beans.User;
 import utility.DbConnection;
 import utility.Templating;
-
+import dao.CourseDAO;
 import dao.ExamDAO;
 
 @WebServlet("/ExamResult")
@@ -46,6 +47,41 @@ public class ExamResult extends HttpServlet {
 		String chosenExam = request.getParameter("examDate");
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 		ExamStudent examStudent = new ExamStudent();
+		
+		try {			 
+			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(chosenCourse));
+			
+			if(cDao.findCourse() == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
+				return;
+			}
+			List<String> currStudents = cDao.findAttendingStudent();
+			if(currStudents == null || !currStudents.contains(user.getMatricola())) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended course");
+				return;
+			}
+						
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student's exams database extraction");
+		}
+		
+		try {		 
+			ExamDAO exDao = new ExamDAO(connection,chosenCourseId ,chosenExam );		
+			if(exDao.findExam() == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
+				return;
+			}
+			List<String> examStudents = exDao.findExamStudent();
+			if(examStudents == null || !examStudents.contains(user.getMatricola())) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended exam");
+				return;
+			}
+			
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student's exams database extraction");
+		}
+		
+		
 		try {
 			examStudent = eDao.getResult(user.getMatricola());
 		} catch (SQLException e) {
