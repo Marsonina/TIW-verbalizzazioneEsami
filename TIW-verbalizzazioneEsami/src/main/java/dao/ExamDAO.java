@@ -21,15 +21,15 @@ public class ExamDAO {
 	}
 	
 	public ExamStudent getResult(String matricola) throws SQLException{
-		ExamStudent examStudent = null;
-		String query = "SELECT matricola, name, surname, degree, email, result, resultState FROM student, exam_students WHERE matricolaEnrolled = matricola AND matricola = ? AND examCourseId = ? AND examDate = ?";
+		ExamStudent examStudent = new ExamStudent();
+		String query = "SELECT matricola, name, surname, degree, email, result, resultState FROM student, exam_students "
+				+ "WHERE matricolaStudent = matricola AND matricola = ? AND courseId = ? AND examDate = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1, matricola);
 			pstatement.setInt(2, this.courseId);
 			pstatement.setString(3, this.chosenDate);
 			try (ResultSet result = pstatement.executeQuery();) {
 				if (result.next()) {
-					examStudent = new ExamStudent();
 					examStudent.setMatricola(result.getString("matricola"));
 					examStudent.setName(result.getString("name"));
 					examStudent.setSurname(result.getString("surname"));
@@ -37,10 +37,12 @@ public class ExamDAO {
 					examStudent.setEmail(result.getString("email"));
 					examStudent.setResult(result.getString("result"));
 					examStudent.setResultState(result.getString("resultState"));
+					
 				}
 			}
 		}
 		return examStudent;	
+		
 	}
 	
 	public List<ExamStudent> getStudents() throws SQLException {

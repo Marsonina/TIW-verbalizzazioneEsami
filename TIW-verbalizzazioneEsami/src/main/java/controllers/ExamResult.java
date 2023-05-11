@@ -57,6 +57,8 @@ public class ExamResult extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("examStudent", examStudent);
+		ctx.setVariable("courseId", chosenCourseId);
+		ctx.setVariable("examDate", chosenExam);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 

@@ -49,18 +49,6 @@
 					No exam date for course number <span th:text="${courseId}"></span>
 				</div>
 				<div th:if="${not #lists.isEmpty(exams)}">
-<<<<<<< HEAD
-				<form th:action="@{/GoToEnrolledStudents(courseId=${courseId}, examDate=date)}">
-					Choose an exam date for course number <span th:text="${courseId}"></span>:
-					<br> 
-					<select name="date">
-						<option th:each="e : ${exams}" th:value="${e.date}" th:text="${e.date}"></option>
-					</select>
-					<input type="hidden" name="courseId" th:value="${courseId}"><br>
-					<input type="submit" name="submit" value="View students">
-				</form>
-
-=======
 					<form th:action="@{/GoToEnrolledStudents(examDate = ${examDate})}">
 						Choose an exam date for course number <span th:text="${courseId}"></span>:
 						<br> 
@@ -70,7 +58,6 @@
 							<input type="hidden" name="courseId" th:value="${courseId}"><br>
 						<input type="submit" name="submit" value="View students">
 					</form>
->>>>>>> branch 'main' of https://github.com/Marsonina/TIW-verbalizzazioneEsami.git
 				</div>
 			</td>
 		</tr>
