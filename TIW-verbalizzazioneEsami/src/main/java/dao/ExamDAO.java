@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+
 import beans.ExamStudent;
 import java.util.ArrayList;
 import java.util.List;
 
 import beans.Course;
 import beans.Exam;
+import beans.Verbal;
 public class ExamDAO {
 	private Connection connection;
 	private int courseId;
@@ -110,5 +113,63 @@ public class ExamDAO {
 		}
 		return users;
 	}
+	
+	public void Publish() throws SQLException {
+		String query = "UPDATE exam_students " +
+                "SET resultState = 'PUBBLICATO' " +
+                "WHERE resultState = 'INSERITO'";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.executeUpdate();
+		}
+	}
+	
+	public void CreateVerbal(Verbal verbal) throws SQLException{
+		String query = "INSERT INTO Verbal(examDate, courseId, dateTime, matricolaTeacher) VALUES(?,?,?,?)";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setString(1, chosenDate);
+			pstatement.setInt(2, courseId);
+			pstatement.setTimestamp(3, Timestamp.valueOf(verbal.getDateTime()));
+			pstatement.setString(4, verbal.getMatricolaTeacher());
+			pstatement.executeUpdate();
+		}
+		
+	}
+	public void Verbalize() throws SQLException {
+		String query = "UPDATE exam_students " +
+                "SET resultState = 'VERBALIZZATO' " +
+                "WHERE resultState = 'PUBBLICATO'";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.executeUpdate();
+		}
+	}
+	
+	public List<ExamStudent> getVerbalizedResult() throws SQLException {
+		List<ExamStudent> users = new ArrayList<ExamStudent>();
+		String query = "SELECT student.matricola, student.name, student.surname, student.degree, student.email, exam_students.result, exam_students.resultState"
+				+ " FROM student, exam_students WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? AND resultState = 'PUBBLICATO' ";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setInt(1, courseId);
+			pstatement.setString(2, chosenDate);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // no results, credential check failed
+					return null;
+				else {
+					while(result.next()) {
+						ExamStudent student = new ExamStudent();
+						student.setMatricola(result.getString("matricola"));
+						student.setName(result.getString("name"));
+						student.setSurname(result.getString("surname"));
+						student.setDegree(result.getString("degree"));
+						student.setEmail(result.getString("email"));
+						student.setResult(result.getString("result"));
+						student.setResultState(result.getString("resultState"));
+						users.add(student);
+					}
+				}
+			}
+		}
+		return users;
+	}
+	
 
 }
