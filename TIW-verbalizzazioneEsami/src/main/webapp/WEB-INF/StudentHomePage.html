@@ -19,7 +19,7 @@
 		<h1>Polimi servizi online</h1>
 	</div>
 	<p>
-		Select a course and choose an exam date
+		Select a course and choose an exam date!
 	</p>
 	<table>
 		<tr>
@@ -49,15 +49,14 @@
 					No exam date for course number <span th:text="${courseId}"></span>
 				</div>
 				<div th:if="${not #lists.isEmpty(exams)}">
-					<form th:action="@{/ExamResult(date=${examDate}, courseId = ${courseId})}" method="POST">
+					<form th:action="@{/ExamResult(examDate = ${examDate})}">
 						Choose an exam date for course number <span th:text="${courseId}"></span>:
 						<br> 
 						<select name="examDate">
 							<option th:each="e : ${exams}" th:value="${e.date}"
-								th:text="${e.date}">xxx</option>
-						</select> 
-						<hr>
-						<input type="submit" name="submit" value="View results">
+								th:text="${e.date}">xx</option></select>
+							<input type="hidden" name="courseId" th:value="${courseId}"><br>
+						<button type="submit" class="btn btn-primary">View result</button>
 					</form>
 				</div>
 			</td>

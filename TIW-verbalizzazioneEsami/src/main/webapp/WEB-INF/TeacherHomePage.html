@@ -12,14 +12,14 @@
 		<a th:href="@{/Logout}">Logout</a>
 	</div>
 	<div align="right">
-		<span th:text="${session.user.role}">Student</span>
+		<span th:text="${session.user.role}">Teacher</span>
 	</div>
 	<hr>
 	<div align="left">
 		<h1>Polimi servizi online</h1>
 	</div>
 	<p>
-		Select a course and choose an exam date
+		Select a course and choose an exam date!
 	</p>
 	<table>
 		<tr>
@@ -54,9 +54,9 @@
 						<br> 
 						<select name="examDate">
 							<option th:each="e : ${exams}" th:value="${e.date}"
-								th:text="${e.date}">xxx</option></select>
+								th:text="${e.date}">xx</option></select>
 							<input type="hidden" name="courseId" th:value="${courseId}"><br>
-						<input type="submit" name="submit" value="View students">
+						<button type="submit" class="btn btn-primary">View students</button>
 					</form>
 				</div>
 			</td>
