@@ -46,13 +46,15 @@ public class VerbalizeResults extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		HttpSession s = request.getSession();
+		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
 		String selectedCourse = request.getParameter("courseId");
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
 		Verbal verbal = new Verbal();
 
-		/*try {
+		try {
 			 
 			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
 			
@@ -83,7 +85,7 @@ public class VerbalizeResults extends HttpServlet {
 			
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
-		}*/
+		}
 		
 		
 		try {
@@ -91,9 +93,11 @@ public class VerbalizeResults extends HttpServlet {
 			String matricolaTeacher = cDAO.findOwnerTeacher();
 			verbal.setMatricolaTeacher(matricolaTeacher);
 			try {
-				eDao.CreateVerbal(verbal);
+				int id = eDao.createVerbal(verbal);
+				verbal.setVerbalId(id);
 				students = eDao.getVerbalizedResult();
 				eDao.Verbalize();
+				System.out.print(verbal.getVerbalId());
 
 			} catch (SQLException e) {
 				try {

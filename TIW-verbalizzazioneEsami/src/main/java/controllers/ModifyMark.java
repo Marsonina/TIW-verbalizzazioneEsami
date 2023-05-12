@@ -41,10 +41,6 @@ public class ModifyMark extends HttpServlet {
 		String matricolaSelected = request.getParameter("matricola");
 		String examMark = request.getParameter("examMark");
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
-		System.out.println(examMark);
-		System.out.println(chosenCourseId);
-		System.out.println(chosenExam);
-		System.out.println(matricolaSelected);
 		
 		
 		try {

@@ -55,7 +55,7 @@
 							<input type="hidden" name="matricola" th:value="${s.matricola}">
 							<input type="hidden" name="courseId" th:value="${courseId}">
 							<input type="hidden" name="examDate" th:value="${examDate}">
-    						<button th:attr="disabled=${s.resultState != 'NON INSERITO'} ? true : null, onclick=${s.resultState != 'NON INSERITO'} ? '' : null" type="submit" class="btn btn-primary">Modify</button>
+    						<button th:attr="disabled=${s.resultState != 'NON INSERITO' and s.resultState != 'INSERITO'} ? true : null, onclick=${s.resultState != 'NON INSERITO' and s.resultState != 'INSERITO'} ? '' : null" type="submit" class="btn btn-primary">Modify</button>
 							</form><td>
 					</tr>
 					</tbody>
