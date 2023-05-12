@@ -50,11 +50,12 @@
 							<td th:text="${s.email}">nome.cognome@polimi.it</td>
 							<td th:text="${s.result}"></td>
 							<td th:text="${s.resultState}">NON INSERITO</td>		
+
 							<td><form th:action="@{/GoToModifyPage}">
 							<input type="hidden" name="matricola" th:value="${s.matricola}">
 							<input type="hidden" name="courseId" th:value="${courseId}">
 							<input type="hidden" name="examDate" th:value="${examDate}">
-    							<button type="submit" class="btn btn-primary">Modify</button>
+    						<button th:attr="disabled=${s.resultState != 'NON INSERITO'} ? true : null, onclick=${s.resultState != 'NON INSERITO'} ? '' : null" type="submit" class="btn btn-primary">Modify</button>
 							</form><td>
 					</tr>
 					</tbody>
@@ -64,11 +65,16 @@
 	</table>
 	<br>
 	<div th:if="${not #lists.isEmpty(students)}" align="center">
-		<form th:action="@{/ToPublish}" method="POST" >
+		<form th:action="@{/PublishResults}" >
+			<input type="hidden" name="courseId" th:value="${courseId}">
+			<input type="hidden" name="examDate" th:value="${examDate}">
    			<button type="submit" class="btn btn-primary">Publish</button>
+
 		</form>
 		<br>
-		<form th:action="@{/ToVerbalize}" method="POST" >
+		<form th:action="@{/VerbalizeResults}" >
+			<input type="hidden" name="courseId" th:value="${courseId}">
+			<input type="hidden" name="examDate" th:value="${examDate}">
    			<button type="submit" class="btn btn-primary">Verbalize</button>
 		</form>
 	</div>

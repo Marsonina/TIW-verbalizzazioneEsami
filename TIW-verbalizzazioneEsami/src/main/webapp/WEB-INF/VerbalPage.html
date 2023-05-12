@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Verbal Page</title>
+</head>
+<body>
+	<div align="right">
+		<span th:text="${session.user.name}">MARISSA</span>
+		<span th:text="${session.user.surname}">MAYER</span>
+		<span th:text="${session.user.matricola}">-----</span>
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
+	<div align="right">
+		<span th:text="${session.user.role}">Teacher</span>
+	</div>
+	<hr>
+	<div align="center">
+		<h1>Verbal</h1><br>
+		Code: <span th:text="${verbal.verbalId}">1</span><br>
+		DateTime: <span th:text="${verbal.dateTime}">---</span><br>		
+	</div>
+	<p>
+		Course Id: <span th:text="${courseId}">2</span><br>
+		Exam date: <span th:text="${examDate}">2023-01-01</span><br>
+		Matricola Teacher: <span th:text="${verbal.matricolaTeacher}">xxxxxx</span><br>
+	</p>
+	<table align="center">
+		<tr>
+			<td>
+				<table border="1">
+					<thead>
+						<tr>
+							<th>Matricola</th>
+							<th>Name</th>
+							<th>Surname</th>
+							<th>Result</th>
+						</tr>
+					</thead>
+					<tbody>
+					<tr th:each="s : ${students}">
+							<td th:text="${s.matricola}">111111</td>
+							<td th:text="${s.name}">name</td>
+							<td th:text="${s.surname}">surname</td>
+							<td th:text="${s.result}"></td>	
+					</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br>
+	
+</body>
+</html>
