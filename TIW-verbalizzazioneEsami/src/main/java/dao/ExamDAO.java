@@ -137,8 +137,19 @@ public class ExamDAO {
 	public void Verbalize() throws SQLException {
 		String query = "UPDATE exam_students " +
                 "SET resultState = 'VERBALIZZATO' " +
-                "WHERE resultState = 'PUBBLICATO'";
+                "WHERE resultState = 'PUBBLICATO' OR resultState = 'RIFIUTATO'";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.executeUpdate();
+		}
+	}
+	public void Refuse(String matricola) throws SQLException {
+		String query = "UPDATE exam_students " +
+                "SET resultState = 'RIFIUTATO', result = 'RIMANDATO' " +
+                "WHERE resultState = 'PUBBLICATO' AND matricolaStudent= ? AND courseId = ? AND examDate = ?";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setString(1, matricola);
+			pstatement.setString(3, chosenDate);
+			pstatement.setInt(2, courseId);
 			pstatement.executeUpdate();
 		}
 	}
@@ -146,7 +157,7 @@ public class ExamDAO {
 	public List<ExamStudent> getVerbalizedResult() throws SQLException {
 		List<ExamStudent> users = new ArrayList<ExamStudent>();
 		String query = "SELECT student.matricola, student.name, student.surname, student.degree, student.email, exam_students.result, exam_students.resultState"
-				+ " FROM student, exam_students WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? AND resultState = 'PUBBLICATO' ";
+				+ " FROM student, exam_students WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? AND (resultState = 'PUBBLICATO' OR resultState = 'RIFIUTATO')";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setInt(1, courseId);
 			pstatement.setString(2, chosenDate);

@@ -47,8 +47,10 @@
 	
 	<br>
 	
-	<div align="center">
-	<form th:action="@{/ToRefuse}" method="POST">
+	<div th:if="${examStudent.resultState == 'PUBBLICATO'}" align="center">
+	<form th:action="@{/RefuseMark}" method="POST">
+	<input type="hidden" name="courseId" th:value="${courseId}">
+	<input type="hidden" name="examDate" th:value="${examDate}">
 	<input type="submit" name="submit" value="Refuse mark">
 	</form>
 	</div>
