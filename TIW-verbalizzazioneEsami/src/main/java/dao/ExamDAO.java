@@ -118,9 +118,9 @@ public class ExamDAO {
 				+ "WHERE matricolaStudent = ? AND courseId = ? AND examDate = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1, mark);
-			pstatement.setString(1, matricola);
-			pstatement.setInt(2, courseId);
-			pstatement.setString(3, chosenDate);
+			pstatement.setString(2, matricola);
+			pstatement.setInt(3, courseId);
+			pstatement.setString(4, chosenDate);
 			pstatement.executeUpdate();
 		}
 	}
