@@ -1,3 +1,4 @@
+//course bean
 package beans;
 
 public class Course {
