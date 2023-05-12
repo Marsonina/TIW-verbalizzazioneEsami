@@ -114,10 +114,10 @@ public class ExamDAO {
 	}
 	
 	public void changeMark(String matricola, String mark) throws SQLException {
-		String query= "UPDATE exam_students SET result = '29', resultState = 'INSERITO' "
+		String query= "UPDATE exam_students SET result = ?, resultState = 'INSERITO' "
 				+ "WHERE matricolaStudent = ? AND courseId = ? AND examDate = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-			//pstatement.setString(1, mark);
+			pstatement.setString(1, mark);
 			pstatement.setString(1, matricola);
 			pstatement.setInt(2, courseId);
 			pstatement.setString(3, chosenDate);
