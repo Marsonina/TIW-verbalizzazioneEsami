@@ -41,17 +41,13 @@ public class ModifyMark extends HttpServlet {
 		String matricolaSelected = request.getParameter("matricola");
 		String examMark = request.getParameter("examMark");
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
-		System.out.println(examMark);
-		System.out.println(chosenCourseId);
-		System.out.println(chosenExam);
-		System.out.println(matricolaSelected);
 		
-		
-		try {
+		if(examMark.equals("30L") || examMark.equals("RIPROVATO") || (Integer.parseInt(examMark)>=18 && Integer.parseInt(examMark)<=30)){
+			try {
 			eDao.changeMark(matricolaSelected, examMark);
-		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Failure in student's exams database updating");
-		}
+			}catch (SQLException e) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Failure in student's exams database updating");
+			}
 		
 		
 		String path = "/GoToEnrolledStudents";
@@ -59,6 +55,12 @@ public class ModifyMark extends HttpServlet {
 		request.setAttribute("courseId", chosenCourse);
 		request.getRequestDispatcher(path).forward(request, response);
 
+		}else {
+			String path = "/GoToModifyPage";
+			request.setAttribute("examDate", chosenExam);
+			request.setAttribute("courseId", chosenCourse);
+			request.setAttribute("matricola", matricolaSelected);
+			request.getRequestDispatcher(path).forward(request, response);
+		}
 	}
-
 }

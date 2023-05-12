@@ -47,7 +47,6 @@ public class GoToEnrolledStudents extends HttpServlet {
 		String selectedCourse = request.getParameter("courseId");
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
-		System.out.println("cacca");
 
 		try {
 			 
