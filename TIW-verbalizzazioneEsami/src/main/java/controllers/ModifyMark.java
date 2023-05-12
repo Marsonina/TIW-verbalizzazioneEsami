@@ -44,6 +44,7 @@ public class ModifyMark extends HttpServlet {
 		System.out.println(examMark);
 		System.out.println(chosenCourseId);
 		System.out.println(chosenExam);
+		System.out.println(matricolaSelected);
 		
 		
 		try {
@@ -52,10 +53,12 @@ public class ModifyMark extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Failure in student's exams database updating");
 		}
 		
+		
+		String path = "/GoToEnrolledStudents";
+		request.setAttribute("examDate", chosenExam);
+		request.setAttribute("courseId", chosenCourse);
+		request.getRequestDispatcher(path).forward(request, response);
 
-		String ctxpath = getServletContext().getContextPath();
-		String path = ctxpath + "/GoToEnrolledStudents?examDate=" +chosenExam + "&courseId=" + chosenCourse;
-		response.sendRedirect(path);
 	}
 
 }
