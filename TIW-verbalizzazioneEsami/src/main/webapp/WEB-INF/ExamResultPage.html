@@ -19,7 +19,7 @@
 		Course Id: <span th:text="${courseId}">1</span><br>
 		Exam date: <span th:text="${examDate}">2023-01-01</span>
 	</p>
-	<div th:if="${examStudent.resultState != 'NON INSERITO'}">
+	<div th:if="${examStudent.resultState != 'NON INSERITO' and examStudent.resultState != 'INSERITO'}">
 	<fieldset>
 	<!-- ricorda di non aver inserito il nome del corso -->
 	<p>
@@ -47,8 +47,10 @@
 	
 	<br>
 	
-	<div align="center">
-	<form th:action="@{/ToRefuse}" method="POST">
+	<div th:if="${examStudent.resultState == 'PUBBLICATO'}" align="center">
+	<form th:action="@{/RefuseMark}" method="POST">
+	<input type="hidden" name="courseId" th:value="${courseId}">
+	<input type="hidden" name="examDate" th:value="${examDate}">
 	<input type="submit" name="submit" value="Refuse mark">
 	</form>
 	</div>
@@ -56,7 +58,7 @@
 	</div>
 
 	
-	<div th:if="${examStudent.resultState == 'NON INSERITO'}"  align="center" >
+	<div th:if="${examStudent.resultState == 'NON INSERITO' and examStudent.resultState != 'INSERITO'}"  align="center" >
 	<hr>
 		Voto non ancora definito
 	</div>

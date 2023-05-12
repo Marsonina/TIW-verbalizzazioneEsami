@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 
 import beans.ExamStudent;
@@ -134,17 +135,44 @@ public class ExamDAO {
 		}
 	}
 	
-	public void CreateVerbal(Verbal verbal) throws SQLException{
-		String query = "INSERT INTO Verbal(examDate, courseId, dateTime, matricolaTeacher) VALUES(?,?,?,?)";
+	public int createVerbal(Verbal verbal) throws SQLException {
+	    String query = "INSERT INTO Verbal(examDate, courseId, dateTime, matricolaTeacher) VALUES (?, ?, ?, ?)";
+	    try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+	        pstatement.setString(1, chosenDate);
+	        pstatement.setInt(2, courseId);
+	        pstatement.setTimestamp(3, Timestamp.valueOf(verbal.getDateTime()));
+	        pstatement.setString(4, verbal.getMatricolaTeacher());
+	        pstatement.executeUpdate();
+	        
+	        try (ResultSet generatedKeys = pstatement.getGeneratedKeys()) {
+	            if (generatedKeys.next()) {
+	                return generatedKeys.getInt(1);
+	            } else {
+	                throw new SQLException("Creating verbal failed, no ID obtained.");
+	            }
+	        }
+	    }
+	}
+
+	/*public int getVerbalId(Verbal verbal) throws SQLException{
+		String query= "SELECT id FROM verbal WHERE courseId = ? AND examDate = ? AND dateTime = ? AND matricolaTeacher = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-			pstatement.setString(1, chosenDate);
-			pstatement.setInt(2, courseId);
+			pstatement.setInt(1, courseId);
+			pstatement.setString(2, chosenDate);
 			pstatement.setTimestamp(3, Timestamp.valueOf(verbal.getDateTime()));
 			pstatement.setString(4, verbal.getMatricolaTeacher());
-			pstatement.executeUpdate();
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst())
+					return 0;
+				else {
+					
+					return result.getInt("id");
+				}
+			}
 		}
 		
-	}
+	}*/
+	
 	public void Verbalize() throws SQLException {
 		String query = "UPDATE exam_students " +
                 "SET resultState = 'VERBALIZZATO' " +
@@ -153,11 +181,21 @@ public class ExamDAO {
 			pstatement.executeUpdate();
 		}
 	}
-	
+		public void Refuse(String matricola) throws SQLException {
+		String query = "UPDATE exam_students " +
+                "SET resultState = 'RIFIUTATO', result = 'RIMANDATO' " +
+                "WHERE resultState = 'PUBBLICATO' AND matricolaStudent= ? AND courseId = ? AND examDate = ?";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setString(1, matricola);
+			pstatement.setString(3, chosenDate);
+			pstatement.setInt(2, courseId);
+			pstatement.executeUpdate();
+		}
+	}
 	public List<ExamStudent> getVerbalizedResult() throws SQLException {
 		List<ExamStudent> users = new ArrayList<ExamStudent>();
 		String query = "SELECT student.matricola, student.name, student.surname, student.degree, student.email, exam_students.result, exam_students.resultState"
-				+ " FROM student, exam_students WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? AND resultState = 'PUBBLICATO' ";
+				+ " FROM student, exam_students WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? AND (resultState = 'PUBBLICATO' OR resultState = 'RIFIUTATO' ) ";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setInt(1, courseId);
 			pstatement.setString(2, chosenDate);
