@@ -23,7 +23,6 @@ import utility.Templating;
 import beans.ExamStudent;
 import dao.CourseDAO;
 import dao.ExamDAO;
-import dao.CourseDAO;
 
 @WebServlet("/GoToEnrolledStudents")
 public class GoToEnrolledStudents extends HttpServlet {
@@ -48,6 +47,7 @@ public class GoToEnrolledStudents extends HttpServlet {
 		String selectedCourse = request.getParameter("courseId");
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
+		System.out.println("cacca");
 
 		try {
 			 

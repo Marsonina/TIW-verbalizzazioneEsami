@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Modify Mark Page</title>
+</head>
+<body>
+	<div align="right">
+		<span th:text="${session.user.name}">BARBARA</span>
+		<span th:text="${session.user.surname}">LISKOV</span>
+		<span th:text="${session.user.matricola}">-----</span>
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
+	<div align="right">
+		<span th:text="${session.user.role}">Student</span>
+	</div>
+	<hr>
+	<p>
+		Course Id: <span th:text="${courseId}">1</span><br>
+		Exam date: <span th:text="${examDate}">2023-01-01</span>
+	</p>
+	
+			<fieldset>
+			<p>
+			Matricola: <span th:text="${matricola}">123456</span>
+			</p>
+			<p>
+			Nome: <span th:text="${examStudent.name}">BARBARA</span>
+			</p>
+			<p>
+			Cognome: <span th:text="${examStudent.surname}">LISKOV</span>
+			</p>
+			<p>
+			Degree: <span th:text="${examStudent.degree}">Computer Engineering</span>
+			</p>
+			<p>
+			Email: <span th:text="${examStudent.email}">Computer Engineering</span>
+			</p>
+			<p>
+			ResultState: <span th:text="${examStudent.resultState}">PUBBLICATO</span>
+			</p>
+			<form th:action="@{/ModifyMark}" method="POST">
+			<p>
+			Result: <input type="text" name="examMark" required>
+			<input type="hidden" name="courseId" th:value="${courseId}">
+			<input type="hidden" name="examDate" th:value="${examDate}"> 
+			<input type="submit" value="Done">
+			</form>
+			</fieldset>
+	
+</body>
+</html>

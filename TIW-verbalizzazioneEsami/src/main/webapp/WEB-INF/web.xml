@@ -11,7 +11,7 @@
   </context-param>
   <context-param>
     <param-name>dbPassword</param-name>
-    <param-value>annaira321</param-value>
+    <param-value>password</param-value>
   </context-param>
   <context-param>
     <param-name>dbDriver</param-name>
@@ -32,15 +32,19 @@
  <filter-mapping> 
     <filter-name>Checker</filter-name> 
     <url-pattern>/GoToHomeTeacher</url-pattern> 
-    <url-pattern>/GoToHomeStudent</url-pattern> 
+    <url-pattern>/GoToHomeStudent</url-pattern>
+    <url-pattern>/GoToEnrolledStudents</url-pattern>  
+    <url-pattern>/ExamResult</url-pattern>
  </filter-mapping>
  <filter-mapping> 
     <filter-name>TeacherChecker</filter-name>
     <url-pattern>/GoToHomeTeacher</url-pattern> 
+    <url-pattern>/GoToEnrolledStudents</url-pattern> 
  </filter-mapping>
  <filter-mapping> 
     <filter-name>StudentChecker</filter-name>
     <url-pattern>/GoToHomeStudent</url-pattern> 
+    <url-pattern>/ExamResult</url-pattern>
  </filter-mapping>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
