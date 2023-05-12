@@ -50,7 +50,10 @@
 							<td th:text="${s.email}">nome.cognome@polimi.it</td>
 							<td th:text="${s.result}"></td>
 							<td th:text="${s.resultState}">NON INSERITO</td>		
-							<td><form th:action="@{/GoToModifyPage(matricola=${s.matricola})}" method="POST">
+							<td><form th:action="@{/GoToModifyPage}">
+							<input type="hidden" name="matricola" th:value="${s.matricola}">
+							<input type="hidden" name="courseId" th:value="${courseId}">
+							<input type="hidden" name="examDate" th:value="${examDate}">
     							<button type="submit" class="btn btn-primary">Modify</button>
 							</form><td>
 					</tr>
