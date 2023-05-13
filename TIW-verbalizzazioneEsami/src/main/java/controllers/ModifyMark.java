@@ -18,6 +18,9 @@ import dao.ExamDAO;
 public class ModifyMark extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
+	
+	
+
 
 	public ModifyMark() {
 		super();
@@ -41,7 +44,7 @@ public class ModifyMark extends HttpServlet {
 		String examMark = request.getParameter("examMark");
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 		
-		if(examMark.equals("30L") || examMark.equals("RIPROVATO") || (Integer.parseInt(examMark)>=18 && Integer.parseInt(examMark)<=30)){
+		if(examMark.equals("30L") || examMark.equals("RIPROVATO") || examMark.equals("ASSENTE") || (Integer.parseInt(examMark)>=18 && Integer.parseInt(examMark)<=30)){
 			try {
 			eDao.changeMark(matricolaSelected, examMark);
 			}catch (SQLException e) {

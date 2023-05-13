@@ -48,7 +48,7 @@
 	<br>
 	
 	<div th:if="${examStudent.resultState == 'PUBBLICATO' && examStudent.result != 'RIMANDATO' 
-					&& examStudent.result != 'RIPROVATO'}" align="center">
+					&& examStudent.result != 'RIPROVATO' && examStudent.result != 'ASSENTE'}" align="center">
 	<form th:action="@{/RefuseMark}" method="POST">
 	<input type="hidden" name="courseId" th:value="${courseId}">
 	<input type="hidden" name="examDate" th:value="${examDate}">
