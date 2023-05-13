@@ -22,7 +22,6 @@
 	<div th:if="${examStudent.resultState == 'PUBBLICATO' || examStudent.resultState == 'RIFIUTATO' 
 					|| examStudent.resultState == 'VERBALIZZATO'}">
 	<fieldset>
-	<!-- ricorda di non aver inserito il nome del corso -->
 	<p>
 	Matricola: <span th:text="${session.user.matricola}">123456</span>
 	</p>
@@ -48,7 +47,8 @@
 	
 	<br>
 	
-	<div th:if="${examStudent.resultState == 'PUBBLICATO' && examStudent.result != 'RIMANDATO'}" align="center">
+	<div th:if="${examStudent.resultState == 'PUBBLICATO' && examStudent.result != 'RIMANDATO' 
+					&& examStudent.result != 'RIPROVATO'}" align="center">
 	<form th:action="@{/RefuseMark}" method="POST">
 	<input type="hidden" name="courseId" th:value="${courseId}">
 	<input type="hidden" name="examDate" th:value="${examDate}">

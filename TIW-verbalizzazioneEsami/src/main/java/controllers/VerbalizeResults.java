@@ -17,17 +17,13 @@ import javax.servlet.http.HttpSession;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
-import beans.Course;
-import beans.Exam;
 import beans.ExamStudent;
 import beans.User;
 import dao.CourseDAO;
 import dao.ExamDAO;
-import dao.TeacherDAO;
 import utility.DbConnection;
 import utility.Templating;
 import beans.Verbal;
-import dao.CourseDAO;
 
 @WebServlet("/VerbalizeResults")
 public class VerbalizeResults extends HttpServlet {
@@ -96,7 +92,7 @@ public class VerbalizeResults extends HttpServlet {
 				int id = eDao.createVerbal(verbal);
 				verbal.setVerbalId(id);
 				students = eDao.getVerbalizedResult();
-				eDao.Verbalize();
+				eDao.verbalize();
 				System.out.print(verbal.getVerbalId());
 
 			} catch (SQLException e) {

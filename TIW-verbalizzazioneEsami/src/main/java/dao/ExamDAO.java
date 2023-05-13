@@ -173,7 +173,7 @@ public class ExamDAO {
 		
 	}*/
 	
-	public void Verbalize() throws SQLException {
+	public void verbalize() throws SQLException {
 		String query = "UPDATE exam_students " +
                 "SET resultState = 'VERBALIZZATO' " +
                 "WHERE resultState = 'PUBBLICATO'";
@@ -194,8 +194,9 @@ public class ExamDAO {
 	}
 	public List<ExamStudent> getVerbalizedResult() throws SQLException {
 		List<ExamStudent> users = new ArrayList<ExamStudent>();
-		String query = "SELECT student.matricola, student.name, student.surname, student.degree, student.email, exam_students.result, exam_students.resultState"
-				+ " FROM student, exam_students WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? AND (resultState = 'PUBBLICATO' OR resultState = 'RIFIUTATO' ) ";
+		String query = "SELECT student.matricola, student.name, student.surname, student.degree, student.email, "
+				+ "exam_students.result, exam_students.resultState FROM student, exam_students WHERE matricola = matricolaStudent "
+				+ "AND courseId = ? AND examDate = ? AND (resultState = 'PUBBLICATO' OR resultState = 'RIFIUTATO' ) ";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setInt(1, courseId);
 			pstatement.setString(2, chosenDate);
