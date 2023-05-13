@@ -3,8 +3,6 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -17,13 +15,9 @@ import javax.servlet.http.HttpSession;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
-import beans.Course;
-import beans.Exam;
 import beans.ExamStudent;
 import beans.User;
-import dao.CourseDAO;
 import dao.ExamDAO;
-import dao.TeacherDAO;
 import utility.DbConnection;
 import utility.Templating;
 

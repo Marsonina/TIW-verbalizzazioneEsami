@@ -136,7 +136,7 @@ public class ExamDAO {
 	}
 	
 	public int createVerbal(Verbal verbal) throws SQLException {
-	    String query = "INSERT INTO Verbal(examDate, courseId, dateTime, matricolaTeacher) VALUES (?, ?, ?, ?)";
+	    String query = "INSERT INTO verbal(examDate, courseId, dateTime, matricolaTeacher) VALUES (?, ?, ?, ?)";
 	    try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 	        pstatement.setString(1, chosenDate);
 	        pstatement.setInt(2, courseId);
