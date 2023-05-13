@@ -49,6 +49,8 @@ public class GoToEnrolledStudents extends HttpServlet {
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
 		String order = request.getParameter("order");
 		String orderInput = request.getParameter("orderInput");
+		boolean checkPublish = false;
+		boolean checkVerbalize = false;
 
 		System.out.print(orderInput);
 		if(order == null) {
@@ -102,8 +104,27 @@ public class GoToEnrolledStudents extends HttpServlet {
 		try {
 			String orderBy = orderInput + " " + order;
 			System.out.print(orderBy);
-			students = eDao.getStudents(orderBy);	
-			
+			students = eDao.getStudents(orderBy);
+			if(students!= null) {
+				 checkPublish = false;
+				 checkVerbalize = false;
+				for (ExamStudent student : students) {
+				    if (student.getResultState().equals("INSERITO")) {
+				        checkPublish = true;
+				        break;
+				    }
+				}
+				for (ExamStudent student : students) {
+				    if (student.getResultState().equals("PUBBLICATO") || student.getResultState().equals("RIFIUTATO") ||
+				    		student.getResultState().equals("ASSENTE")){
+				        checkVerbalize = true;
+				        break;
+				    }
+				}
+				System.out.println(checkPublish);
+				System.out.println(checkVerbalize);
+			}
+				
 		} catch (SQLException e) {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled students database extraction");
@@ -116,6 +137,8 @@ public class GoToEnrolledStudents extends HttpServlet {
 		ctx.setVariable("examDate", selectedDate);
 		ctx.setVariable("order", order);
 		ctx.setVariable("orderInput", orderInput);
+		ctx.setVariable("checkPublish", checkPublish);
+		ctx.setVariable("checkVerbalize", checkVerbalize);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
