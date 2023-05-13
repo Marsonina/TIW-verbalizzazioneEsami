@@ -42,16 +42,19 @@ public class VerbalizeResults extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		HttpSession s = request.getSession();
+		
 		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
 		String selectedCourse = request.getParameter("courseId");
+		
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
 		Verbal verbal = new Verbal();
 
+		//checks to prevent access to non existing courses and to non -owned courses
 		try {
-			 
 			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
 			
 			if(cDao.findCourse() == null) {
@@ -59,33 +62,28 @@ public class VerbalizeResults extends HttpServlet {
 				return;
 			}
 			String currTeacher = cDao.findOwnerTeacher();
+			
 			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-own course");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-owned course");
 				return;
-			}
-			
-			
+			}	
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
-		
 		try {
-			 
 			ExamDAO exDao = new ExamDAO(connection,Integer.parseInt(selectedCourse) ,selectedDate );
 			
 			if(exDao.findExam() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
 			}
-
-			
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
-		
 		try {
 			CourseDAO cDAO = new CourseDAO(connection, Integer.parseInt(selectedCourse));
+			
 			String matricolaTeacher = cDAO.findOwnerTeacher();
 			verbal.setMatricolaTeacher(matricolaTeacher);
 			try {

@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import beans.User;
 import beans.Course;
 
 public class CourseDAO {

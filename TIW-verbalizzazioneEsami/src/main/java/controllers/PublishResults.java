@@ -12,18 +12,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
-import beans.Course;
-import beans.Exam;
 import beans.ExamStudent;
-import beans.User;
-import dao.CourseDAO;
 import dao.ExamDAO;
-import dao.TeacherDAO;
 import utility.DbConnection;
 import utility.Templating;
 
