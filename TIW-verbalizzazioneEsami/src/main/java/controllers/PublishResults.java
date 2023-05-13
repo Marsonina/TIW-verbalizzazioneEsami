@@ -31,7 +31,6 @@ import utility.Templating;
 @WebServlet("/PublishResults")
 public class PublishResults extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private TemplateEngine templateEngine;
 	private Connection connection = null;
 	
 	public PublishResults() {
@@ -39,7 +38,6 @@ public class PublishResults extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
-		templateEngine = Templating.template(getServletContext());
 		connection = DbConnection.connect(getServletContext());
 	}
 
@@ -86,20 +84,16 @@ public class PublishResults extends HttpServlet {
 		
 		try {
 			eDao.Publish();	
-			students = eDao.getStudents();	
 			
 		} catch (SQLException e) {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled students database extraction");
 		}
 		
-		String path = "/WEB-INF/EnrolledStudentsPage.html";
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("students", students);
-		ctx.setVariable("courseId",selectedCourse);
-		ctx.setVariable("examDate", selectedDate);
-		templateEngine.process(path, ctx, response.getWriter());
+		String path = "/GoToEnrolledStudents";
+		request.setAttribute("examDate", selectedDate);
+		request.setAttribute("courseId", selectedCourse);
+		request.getRequestDispatcher(path).forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

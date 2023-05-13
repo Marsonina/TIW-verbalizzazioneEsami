@@ -9,6 +9,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import beans.User;
 import dao.UserDAO;
 import utility.DbConnection;
@@ -61,7 +63,8 @@ public class CheckLogin extends HttpServlet {
 		if (u == null) {
 			path = getServletContext().getContextPath() + "/index.html";
 		} else {
-			request.getSession().setAttribute("user", u);
+			HttpSession session = request.getSession();
+			session.setAttribute("user", u);
 			String target = (u.getRole().equals("teacher")) ? "/GoToHomeTeacher" : "/GoToHomeStudent";
 			path = path + target;
 		}
