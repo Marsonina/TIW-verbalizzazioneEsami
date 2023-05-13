@@ -13,6 +13,7 @@
 	</div>
 	<div align="right">
 		<span th:text="${session.user.role}">Teacher</span><br>
+
 	</div>
 	<hr>
 	<div align="left">
@@ -104,13 +105,13 @@
 		<form th:action="@{/PublishResults}" >
 			<input type="hidden" name="courseId" th:value="${courseId}">
 			<input type="hidden" name="examDate" th:value="${examDate}">
-   			<button type="submit" class="btn btn-primary">Publish</button>
+   			<button th:attr="disabled=${!checkPublish}, onclick=${checkPublish}" type="submit" class="btn btn-primary">Publish</button>
 		</form>
 		<br>
 		<form th:action="@{/VerbalizeResults}" >
 			<input type="hidden" name="courseId" th:value="${courseId}">
 			<input type="hidden" name="examDate" th:value="${examDate}">
-   			<button type="submit" class="btn btn-primary">Verbalize</button>
+   			<button th:attr="disabled=${!checkVerbalize}, onclick=${checkVerbalize}" type="submit" class="btn btn-primary">Verbalize</button>
 		</form>
 	</div>
 	

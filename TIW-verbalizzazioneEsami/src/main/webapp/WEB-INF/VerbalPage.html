@@ -14,6 +14,9 @@
 	<div align="right">
 		<span th:text="${session.user.role}">Teacher</span>
 	</div>
+	<div align="left">
+		<a th:href="@{/GoToEnrolledStudents(courseId=${courseId},examDate=${examDate})}">Return to enrolled students</a>
+	</div>
 	<hr>
 	<div align="center">
 		<h1>Verbal</h1><br>
@@ -50,6 +53,5 @@
 		</tr>
 	</table>
 	<br>
-	
 </body>
 </html>
