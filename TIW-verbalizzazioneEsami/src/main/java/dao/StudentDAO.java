@@ -35,6 +35,7 @@ public class StudentDAO {
 		return courses;
 	}
 	
+	//A method that returns the list of exam sessions for a course in which the student is enrolled for the exam(passed by argument)
 	public List<Exam> getExamDates(int chosenCourseId) throws SQLException {
 		List<Exam> exams = new ArrayList<Exam>();
 		String query = "SELECT examDate FROM exam_students WHERE courseId = ? AND matricolaStudent = ? ORDER BY examDate DESC";

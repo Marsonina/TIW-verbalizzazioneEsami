@@ -19,12 +19,13 @@ public class CourseDAO {
 		this.id = i;
 	}
 
+	//method that find the name of a selected course
 	public Course findCourse() throws SQLException {
 		String query = "SELECT id, name FROM course WHERE id = ? ";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setInt(1, id);
 			try (ResultSet result = pstatement.executeQuery();) {
-				if (!result.isBeforeFirst()) // no results, credential check failed
+				if (!result.isBeforeFirst()) 
 					return null;
 				else {
 					result.next();
@@ -51,7 +52,7 @@ public class CourseDAO {
 		}
 	}
 
-	
+	//method that find all the students that are enrolled to a specific exam
 	public List<String> findAttendingStudent() throws SQLException {
 		List<String> users = new ArrayList<String>();
 		String query = "SELECT matricolaStudent FROM course_students WHERE courseId= ?";
