@@ -1,4 +1,3 @@
-//CheckLogin
 package controllers;
 
 import java.io.IOException;
@@ -14,8 +13,6 @@ import javax.servlet.http.HttpSession;
 import beans.User;
 import dao.UserDAO;
 import utility.DbConnection;
-import java.util.UUID;
-
 
 
 @WebServlet("/CheckLogin")
@@ -28,8 +25,8 @@ public class CheckLogin extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
+		//connection with DB
 		connection = DbConnection.connect(getServletContext());
-
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -39,24 +36,22 @@ public class CheckLogin extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+		//get of parameters insert by the user
 		String usrn = request.getParameter("username");
 		String pwd = request.getParameter("pwd");
 		String role = request.getParameter("role");
 		
-		/*if (usrn == null || usrn.isEmpty() || pwd == null || pwd.isEmpty() || role == null) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
-			return;
-		}*/
-		
 		UserDAO usr = new UserDAO(connection);
 		User u = null;
+		
+		
 		try {
 			if(role.equals("teacher"))
+				//check of teacher credentials
 				u = usr.checkCredentialsTeacher(usrn, pwd);
 			else if(role.equals("student"))
+				//check of student credentials
 				u = usr.checkCredentialsStudent(usrn, pwd);
-
 		} catch (SQLException e) {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in database credential checking"+" "+role);
@@ -68,20 +63,10 @@ public class CheckLogin extends HttpServlet {
 		if (u == null) {
 			path = getServletContext().getContextPath() + "/index.html";
 		} else {
-			// Ottieni l'oggetto HttpSession
 			HttpSession session = request.getSession();
-			
-			// Genera un nuovo identificatore per la sessione
-			String sessionId = UUID.randomUUID().toString();
-			
 			request.getSession().setAttribute("user", u);
-			
-			System.out.println(sessionId);
-
-			// Imposta l'attributo "sessionId" nella sessione
-			session.setAttribute("sessionId", sessionId);
-		
 			session.setAttribute("user", u);
+			//redirect to the appropriate servlet depending on the role of the user
 			String target = (u.getRole().equals("teacher")) ? "/GoToHomeTeacher" : "/GoToHomeStudent";
 			path = path + target;
 		}
@@ -94,6 +79,7 @@ public class CheckLogin extends HttpServlet {
 				connection.close();
 			}
 		} catch (SQLException sqle) {
+			 System.err.println("Errore durante la chiusura della connessione: " + sqle.getMessage());
 		}
 	}
 }

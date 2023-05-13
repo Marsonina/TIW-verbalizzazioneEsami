@@ -205,6 +205,7 @@ public class ExamDAO {
 		}
 	}
 	
+	//method that insert a new verbal into the verbal table in DB and return the id of the verbal
 	public int createVerbal(Verbal verbal) throws SQLException {
 	    String query = "INSERT INTO verbal(examDate, courseId, dateTime, matricolaTeacher) VALUES (?, ?, ?, ?)";
 	    try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -212,6 +213,10 @@ public class ExamDAO {
 	        pstatement.setInt(2, courseId);
 	        pstatement.setTimestamp(3, Timestamp.valueOf(verbal.getDateTime()));
 	        pstatement.setString(4, verbal.getMatricolaTeacher());
+	        System.out.println(chosenDate);
+	        System.out.println(courseId);
+	        System.out.println(Timestamp.valueOf(verbal.getDateTime()));
+	        System.out.println(verbal.getMatricolaTeacher());
 	        pstatement.executeUpdate();
 	        
 	        try (ResultSet generatedKeys = pstatement.getGeneratedKeys()) {
@@ -246,7 +251,7 @@ public class ExamDAO {
 	public void verbalize() throws SQLException {
 		String query = "UPDATE exam_students " +
                 "SET resultState = 'VERBALIZZATO' " +
-                "WHERE resultState = 'PUBBLICATO'";
+                "WHERE resultState = 'PUBBLICATO' OR resultState = 'RIFIUTATO'";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.executeUpdate();
 		}
