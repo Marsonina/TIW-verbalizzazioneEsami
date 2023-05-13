@@ -47,6 +47,23 @@ public class GoToEnrolledStudents extends HttpServlet {
 		String selectedCourse = request.getParameter("courseId");
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
+		String order = request.getParameter("order");
+		String orderInput = request.getParameter("orderInput");
+
+		System.out.print(orderInput);
+		if(order == null) {
+			order = "ASC";
+		}else if(order.equals("ASC")) {
+			order = "DESC";
+		}else if(order.equals("DESC")) {
+			order = "ASC";
+		}
+			
+		
+		if(orderInput == null) {
+			orderInput = "matricolaStudent";
+		}
+		
 
 		try {
 			 
@@ -83,7 +100,9 @@ public class GoToEnrolledStudents extends HttpServlet {
 		
 		
 		try {
-			students = eDao.getStudents();	
+			String orderBy = orderInput + " " + order;
+			System.out.print(orderBy);
+			students = eDao.getStudents(orderBy);	
 			
 		} catch (SQLException e) {
 			// throw new ServletException(e);
@@ -95,6 +114,8 @@ public class GoToEnrolledStudents extends HttpServlet {
 		ctx.setVariable("students", students);
 		ctx.setVariable("courseId",selectedCourse);
 		ctx.setVariable("examDate", selectedDate);
+		ctx.setVariable("order", order);
+		ctx.setVariable("orderInput", orderInput);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 

@@ -25,18 +25,54 @@
 	<div th:if="${#lists.isEmpty(students)}" align = "center">
 		No enrolled students for the selected exam
 	</div>
+
 	<table th:if="${not #lists.isEmpty(students)}" align="center">
 		<tr>
 			<td>
 				<table border="1">
 					<thead>
 						<tr>
-							<th>Matricola</th>
-							<th>Name</th>
-							<th>Surname</th>
-							<th>Degree</th>
-							<th>Email</th>
-							<th>Result</th>
+							<th>Matricola<br>
+							    <form th:action="@{/GoToEnrolledStudents}" method="get">
+							        <input type="hidden" name="courseId" th:value="${courseId}">
+							        <input type="hidden" name="examDate" th:value="${examDate}">
+							        <input type="hidden" name="order" th:value="${order}">
+							        <input type="hidden" name="orderInput" th:value="matricolaStudent">
+							        <input type="submit" value="matricolaStudent" class="btn btn-primary" style="width: 60px; height: 10px;">
+							    </form></th>
+																													
+
+							<th>Name<br>
+							    <form th:action="@{/GoToEnrolledStudents}" method="get">
+							        <input type="hidden" name="courseId" th:value="${courseId}">
+							        <input type="hidden" name="examDate" th:value="${examDate}">
+							        <input type="hidden" name="order" th:value="${order}">
+							        <input type="hidden" name="orderInput" th:value="name">
+							        <input type="submit" value="name" class="btn btn-primary" style="width: 60px; height: 10px;">
+							    </form></th>
+							
+							<th>Surname<br><form th:action="@{/GoToEnrolledStudents}" method="get">
+							        <input type="hidden" name="courseId" th:value="${courseId}">
+							        <input type="hidden" name="examDate" th:value="${examDate}">
+							        <input type="hidden" name="order" th:value="${order}">
+							        <input type="hidden" name="orderInput" th:value="surname">
+							        <input type="submit" value="surname" class="btn btn-primary" style="width: 60px; height: 10px;">
+							    </form></th>
+							<th>Degree<br><form th:action="@{/GoToEnrolledStudents}" method="get">
+							        <input type="hidden" name="courseId" th:value="${courseId}">
+							        <input type="hidden" name="examDate" th:value="${examDate}">
+							        <input type="hidden" name="order" th:value="${order}">
+							        <input type="hidden" name="orderInput" th:value="degree">
+							        <input type="submit" value="degree" class="btn btn-primary" style="width: 60px; height: 10px;">
+							    </form></th>
+							<th>Email<br></th>
+							<th>Result<br><form th:action="@{/GoToEnrolledStudents}" method="get">
+							        <input type="hidden" name="courseId" th:value="${courseId}">
+							        <input type="hidden" name="examDate" th:value="${examDate}">
+							        <input type="hidden" name="order" th:value="${order}">
+							        <input type="hidden" name="orderInput" th:value="result">
+							        <input type="submit" value="result" class="btn btn-primary" style="width: 60px; height: 10px;">
+							    </form></th>
 							<th>ResultState</th>
 							<th>Modify</th>
 						</tr>

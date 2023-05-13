@@ -49,13 +49,22 @@ public class ExamDAO {
 		return examStudent;	
 	}
 	
-	public List<ExamStudent> getStudents() throws SQLException {
+	/*public List<ExamStudent> getStudents(String orderby) throws SQLException {
 		List<ExamStudent> users = new ArrayList<ExamStudent>();
 		String query = "SELECT student.matricola, student.name, student.surname, student.degree, student.email, exam_students.result, exam_students.resultState"
-				+ " FROM student, exam_students WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? ";
+				+ " FROM student, exam_students WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ?  ORDER BY CASE ? "
+				+ "    WHEN 'name ASC' THEN name"
+				+ "    WHEN 'name DESC' THEN name DESC"
+				+ "    WHEN 'surname ASC' THEN surname"
+				+ "    WHEN 'surname DESC' THEN surname DESC"
+				+ "    WHEN 'matricolaStudent ASC' THEN matricolaStudent"
+				+ "    WHEN 'matricolaStudent DESC' THEN matricolaStudent DESC"
+				+ "    ELSE name"
+				+ "  END;";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setInt(1, courseId);
 			pstatement.setString(2, chosenDate);
+			pstatement.setString(3, orderby);
 			try (ResultSet result = pstatement.executeQuery();) {
 				if (!result.isBeforeFirst()) // no results, credential check failed
 					return null;
@@ -75,7 +84,68 @@ public class ExamDAO {
 			}
 		}
 		return users;
+	}*/
+	public List<ExamStudent> getStudents(String orderby) throws SQLException {
+	    List<ExamStudent> users = new ArrayList<ExamStudent>();
+	    String defaultOrder = "name"; 
+	    String orderDirection = "ASC"; 
+	    if (orderby != null && !orderby.isEmpty()) {
+	        String[] orderParts = orderby.split(" ");
+	        defaultOrder = orderParts[0];
+	        if (orderParts.length > 1) {
+	            orderDirection = orderParts[1];
+	        }
+	    }
+
+	    String query = "SELECT student.matricola, student.name, student.surname, student.degree, student.email, exam_students.result, exam_students.resultState "
+	            + "FROM student, exam_students "
+	            + "WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? "
+	            + "ORDER BY ";
+	    switch (defaultOrder) {
+	        case "name":
+	            query += "name " + orderDirection + ", surname " + orderDirection + ", matricolaStudent " + orderDirection;
+	            break;
+	        case "surname":
+	            query += "surname " + orderDirection + ", name " + orderDirection + ", matricolaStudent " + orderDirection;
+	            break;
+	        case "matricolaStudent":
+	            query += "matricolaStudent " + orderDirection + ", name " + orderDirection + ", surname " + orderDirection;
+	            break;
+	        case "degree":
+	            query += "degree " + orderDirection + ", name " + orderDirection + ", surname " + orderDirection;
+	            break;
+	        case "result":
+	            query += "result " + orderDirection + ", name " + orderDirection + ", surname " + orderDirection;
+	            break;
+	        default:
+	            query += "name " + orderDirection + ", surname " + orderDirection + ", matricolaStudent " + orderDirection;
+	            break;
+	    }
+
+	    try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+	        pstatement.setInt(1, courseId);
+	        pstatement.setString(2, chosenDate);
+	        try (ResultSet result = pstatement.executeQuery();) {
+	            if (!result.isBeforeFirst()) // no results, credential check failed
+	                return null;
+	            else {
+	                while(result.next()) {
+	                    ExamStudent student = new ExamStudent();
+	                    student.setMatricola(result.getString("matricola"));
+	                    student.setName(result.getString("name"));
+	                    student.setSurname(result.getString("surname"));
+	                    student.setDegree(result.getString("degree"));
+	                    student.setEmail(result.getString("email"));
+	                    student.setResult(result.getString("result"));
+	                    student.setResultState(result.getString("resultState"));
+	                    users.add(student);
+	                }
+	            }
+	        }
+	    }
+	    return users;
 	}
+
 	
 	public Exam findExam() throws SQLException{
 		String query= "SELECT date FROM exam WHERE courseId = ? AND date = ?";

@@ -45,6 +45,8 @@ public class GoToHomeStudent extends HttpServlet {
 			throws ServletException, IOException {
 		HttpSession s = request.getSession();
 		User user = (User) s.getAttribute("user");
+		String sessionId = s.getId();
+		System.out.print(sessionId);
 		String chosenCourse = request.getParameter("courseId");
 		StudentDAO sDao = new StudentDAO(connection, user.getMatricola());
 		List<Course> courses = new ArrayList<Course>();

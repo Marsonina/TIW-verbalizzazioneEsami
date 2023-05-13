@@ -9,10 +9,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import beans.User;
 import dao.UserDAO;
 import utility.DbConnection;
-import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
 
@@ -38,15 +39,6 @@ public class CheckLogin extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		
-		
-
-		
-		
-		
-		
-				
 		
 		String usrn = request.getParameter("username");
 		String pwd = request.getParameter("pwd");
@@ -88,7 +80,8 @@ public class CheckLogin extends HttpServlet {
 
 			// Imposta l'attributo "sessionId" nella sessione
 			session.setAttribute("sessionId", sessionId);
-			
+		
+			session.setAttribute("user", u);
 			String target = (u.getRole().equals("teacher")) ? "/GoToHomeTeacher" : "/GoToHomeStudent";
 			path = path + target;
 		}
