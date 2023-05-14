@@ -81,6 +81,7 @@ public class GoToModifyPage extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
+		
 		try {
 			examStudent = eDao.getResult(matricolaExam);				
 		} catch (SQLException e) {
