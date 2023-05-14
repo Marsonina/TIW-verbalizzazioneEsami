@@ -3,23 +3,18 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-
-import beans.ExamStudent;
+import beans.User;
+import dao.CourseDAO;
 import dao.ExamDAO;
 import utility.DbConnection;
-import utility.Templating;
 
 
 @WebServlet("/PublishResults")
@@ -32,53 +27,41 @@ public class PublishResults extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
+		//configuring template
 		connection = DbConnection.connect(getServletContext());
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		HttpSession s = request.getSession();
+		
+		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
 		String selectedCourse = request.getParameter("courseId");
-		List<ExamStudent> students = new ArrayList<ExamStudent>();
+		int chosenCourseId = Integer.parseInt(selectedCourse);
+		
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
-
-		/*try {
-			 
-			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
-			
+		
+		try { 
+			//checking if the selected course exists
+			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
 			if(cDao.findCourse() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
 				return;
 			}
+			//checking if the current teacher owns the selected course
 			String currTeacher = cDao.findOwnerTeacher();
 			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-own course");
 				return;
 			}
-			
-			
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
 		try {
-			 
-			ExamDAO exDao = new ExamDAO(connection,Integer.parseInt(selectedCourse) ,selectedDate );
-			
-			if(exDao.findExam() == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
-				return;
-			}
-
-			
-		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
-		}*/
-		
-		
-		try {
-			eDao.Publish();	
-			
+			eDao.publish();	
 		} catch (SQLException e) {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled students database extraction");

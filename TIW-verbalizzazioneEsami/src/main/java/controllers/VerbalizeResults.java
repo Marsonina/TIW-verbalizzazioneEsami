@@ -36,8 +36,10 @@ public class VerbalizeResults extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
-		templateEngine = Templating.template(getServletContext());
+		//connecting with DB
 		connection = DbConnection.connect(getServletContext());
+		//configuring template
+		templateEngine = Templating.template(getServletContext());
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -53,16 +55,15 @@ public class VerbalizeResults extends HttpServlet {
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
 		Verbal verbal = new Verbal();
 
-		//checks to prevent access to non existing courses and to non -owned courses
 		try {
+			//checking if the selected course exists
 			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
-			
 			if(cDao.findCourse() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
 				return;
 			}
+			//checking if the current teacher owns the selected course
 			String currTeacher = cDao.findOwnerTeacher();
-			
 			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-owned course");
 				return;
@@ -71,8 +72,8 @@ public class VerbalizeResults extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		try {
+			//checking if the the exam date is correct
 			ExamDAO exDao = new ExamDAO(connection,Integer.parseInt(selectedCourse) ,selectedDate );
-			
 			if(exDao.findExam() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
@@ -83,7 +84,6 @@ public class VerbalizeResults extends HttpServlet {
 		
 		try {
 			CourseDAO cDAO = new CourseDAO(connection, Integer.parseInt(selectedCourse));
-			
 			String matricolaTeacher = cDAO.findOwnerTeacher();
 			verbal.setMatricolaTeacher(matricolaTeacher);
 			try {
@@ -91,7 +91,6 @@ public class VerbalizeResults extends HttpServlet {
 				verbal.setVerbalId(id);
 				students = eDao.getVerbalizedResult();
 				eDao.verbalize();
-				System.out.print(verbal.getVerbalId());
 
 			} catch (SQLException e) {
 				try {
@@ -99,8 +98,7 @@ public class VerbalizeResults extends HttpServlet {
 			    } catch (SQLException e1) {
 			        e1.printStackTrace();
 			    }
-			}
-			
+			}	
 		} catch (SQLException e) {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in verbalize results");

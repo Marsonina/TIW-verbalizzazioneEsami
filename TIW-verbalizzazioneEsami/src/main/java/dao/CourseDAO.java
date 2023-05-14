@@ -37,6 +37,8 @@ public class CourseDAO {
 			}
 		}
 	}
+	
+	//method that find the teacher who holds a specific course
 	public String findOwnerTeacher() throws SQLException {
 		String query = "SELECT matricolaTeacher FROM course WHERE id= ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {

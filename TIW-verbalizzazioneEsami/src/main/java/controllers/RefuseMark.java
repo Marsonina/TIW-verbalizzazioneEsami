@@ -71,6 +71,7 @@ public class RefuseMark extends HttpServlet {
 		}
 		
 		try {
+			//change the resultState of the student to "RIFIUTATO"
 			eDao.Refuse(user.getMatricola());
 			examStudent = eDao.getResult(user.getMatricola());
 		} catch (SQLException e) {

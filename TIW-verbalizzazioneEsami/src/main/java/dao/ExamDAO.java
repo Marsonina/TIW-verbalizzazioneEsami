@@ -50,6 +50,7 @@ public class ExamDAO {
 		return examStudent;	
 	}
 	
+	//method that that returns studets enrolled to an exam ordered by the order specified by the user
 	public List<ExamStudent> getStudents(String orderby) throws SQLException {
 	    List<ExamStudent> users = new ArrayList<ExamStudent>();
 	    String defaultOrder = "name"; 
@@ -61,7 +62,6 @@ public class ExamDAO {
 	            orderDirection = orderParts[1];
 	        }
 	    }
-
 	    String query = "SELECT student.matricola, student.name, student.surname, student.degree, student.email, exam_students.result, exam_students.resultState "
 	            + "FROM student, exam_students "
 	            + "WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? "
@@ -86,7 +86,6 @@ public class ExamDAO {
 	            query += "name " + orderDirection + ", surname " + orderDirection + ", matricolaStudent " + orderDirection;
 	            break;
 	    }
-
 	    try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 	        pstatement.setInt(1, courseId);
 	        pstatement.setString(2, chosenDate);
@@ -111,7 +110,7 @@ public class ExamDAO {
 	    return users;
 	}
 
-	
+	//method that returns the date of a specifci exam
 	public Exam findExam() throws SQLException{
 		String query= "SELECT date FROM exam WHERE courseId = ? AND date = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
@@ -150,6 +149,7 @@ public class ExamDAO {
 		return users;
 	}
 	
+	//method that update the mark of the student chose by the teacher
 	public void changeMark(String matricola, String mark) throws SQLException {
 		String query= "UPDATE exam_students SET result = ?, resultState = 'INSERITO' "
 				+ "WHERE matricolaStudent = ? AND courseId = ? AND examDate = ?";
@@ -162,7 +162,8 @@ public class ExamDAO {
 		}
 	}
 
-	public void Publish() throws SQLException {
+	//method that change the resultState of exams from INSERITO to RIFIUTATO
+	public void publish() throws SQLException {
 		String query = "UPDATE exam_students " +
                 "SET resultState = 'PUBBLICATO' " +
                 "WHERE resultState = 'INSERITO'";
@@ -171,7 +172,7 @@ public class ExamDAO {
 		}
 	}
 	
-	//method that insert a new verbal into the verbal table in DB and return the id of the verbal
+	//method that insert a new verbal into the verbal table in DB and returns the id of the verbal
 	public int createVerbal(Verbal verbal) throws SQLException {
 	    String query = "INSERT INTO verbal(examDate, courseId, dateTime, matricolaTeacher) VALUES (?, ?, ?, ?)";
 	    try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -179,10 +180,6 @@ public class ExamDAO {
 	        pstatement.setInt(2, courseId);
 	        pstatement.setTimestamp(3, Timestamp.valueOf(verbal.getDateTime()));
 	        pstatement.setString(4, verbal.getMatricolaTeacher());
-	        System.out.println(chosenDate);
-	        System.out.println(courseId);
-	        System.out.println(Timestamp.valueOf(verbal.getDateTime()));
-	        System.out.println(verbal.getMatricolaTeacher());
 	        pstatement.executeUpdate();
 	        
 	        try (ResultSet generatedKeys = pstatement.getGeneratedKeys()) {
@@ -195,6 +192,7 @@ public class ExamDAO {
 	    }
 	}
 	
+	//method that change che the resultState from PUBBLICATO or RIFIUTATO to VERBALIZZATO
 	public void verbalize() throws SQLException {
 		String query = "UPDATE exam_students " +
                 "SET resultState = 'VERBALIZZATO' " +
@@ -203,17 +201,21 @@ public class ExamDAO {
 			pstatement.executeUpdate();
 		}
 	}
-		public void Refuse(String matricola) throws SQLException {
-		String query = "UPDATE exam_students " +
-                "SET resultState = 'RIFIUTATO', result = 'RIMANDATO' " +
-                "WHERE resultState = 'PUBBLICATO' AND matricolaStudent= ? AND courseId = ? AND examDate = ?";
-		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-			pstatement.setString(1, matricola);
-			pstatement.setString(3, chosenDate);
-			pstatement.setInt(2, courseId);
-			pstatement.executeUpdate();
+	
+	//method that updates the resultState and result in case of a student refuse a mark
+	public void Refuse(String matricola) throws SQLException {
+	String query = "UPDATE exam_students " +
+            "SET resultState = 'RIFIUTATO', result = 'RIMANDATO' " +
+            "WHERE resultState = 'PUBBLICATO' AND matricolaStudent= ? AND courseId = ? AND examDate = ?";
+	try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+		pstatement.setString(1, matricola);
+		pstatement.setString(3, chosenDate);
+		pstatement.setInt(2, courseId);
+		pstatement.executeUpdate();
 		}
 	}
+	
+	//method that populates the verbal with students' infos
 	public List<ExamStudent> getVerbalizedResult() throws SQLException {
 		List<ExamStudent> users = new ArrayList<ExamStudent>();
 		String query = "SELECT student.matricola, student.name, student.surname, student.degree, student.email, "

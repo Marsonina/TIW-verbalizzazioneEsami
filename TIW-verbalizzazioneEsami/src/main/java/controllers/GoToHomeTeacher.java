@@ -70,7 +70,7 @@ public class GoToHomeTeacher extends HttpServlet {
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
 					return;
 				}
-				//checking if the current student is enrolled to the selected course
+				//checking if the current teacher owns the selected course
 				String currTeacher = cDao.findOwnerTeacher();
 				if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-own course");

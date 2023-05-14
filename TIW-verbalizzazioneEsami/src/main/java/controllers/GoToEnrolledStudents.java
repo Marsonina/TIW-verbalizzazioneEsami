@@ -35,23 +35,30 @@ public class GoToEnrolledStudents extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
+		//connecting with DB
 		templateEngine = Templating.template(getServletContext());
+		//configuring template
 		connection = DbConnection.connect(getServletContext());
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		boolean checkPublish = false;
+		boolean checkVerbalize = false;
+		
 		HttpSession s = request.getSession();
+		
 		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
 		String selectedCourse = request.getParameter("courseId");
-		List<ExamStudent> students = new ArrayList<ExamStudent>();
-		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
 		String order = request.getParameter("order");
 		String orderInput = request.getParameter("orderInput");
-		boolean checkPublish = false;
-		boolean checkVerbalize = false;
+		
+		List<ExamStudent> students = new ArrayList<ExamStudent>();
+		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
 
+		//we set the order variable depending on the previous 
+		//value in order to invert the current order of variables
 		if(order == null) {
 			order = "ASC";
 		}else if(order.equals("ASC")) {
@@ -59,59 +66,54 @@ public class GoToEnrolledStudents extends HttpServlet {
 		}else if(order.equals("DESC")) {
 			order = "ASC";
 		}		
-		
+		//we set a default order 
 		if(orderInput == null) {
 			orderInput = "matricolaStudent";
 		}
 		
-
-		try {
-			 
+		try { 
 			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
-			
+			//checking if the selected course exists
 			if(cDao.findCourse() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
 				return;
 			}
+			//checking if the current teacher owns the selected course
 			String currTeacher = cDao.findOwnerTeacher();
 			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-own course");
 				return;
 			}
-			
-			
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
-		try {
-			 
+		try { 
 			ExamDAO exDao = new ExamDAO(connection,Integer.parseInt(selectedCourse) ,selectedDate );
-			
+			//checking if the the exam date is correct
 			if(exDao.findExam() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
 			}
-
-			
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
-		
 		try {
 			String orderBy = orderInput + " " + order;
-			System.out.print(orderBy);
+			//we obtain the students orderd by the order specified by the client
 			students = eDao.getStudents(orderBy);
 			if(students!= null) {
 				 checkPublish = false;
 				 checkVerbalize = false;
+				 //we iterate trough the students to check for which students is possible to publish their marks
 				for (ExamStudent student : students) {
 				    if (student.getResultState().equals("INSERITO")) {
 				        checkPublish = true;
 				        break;
 				    }
 				}
+				//we iterate trough the students to check for which students is not possible to verbalize their marks
 				for (ExamStudent student : students) {
 				    if (student.getResultState().equals("PUBBLICATO") || student.getResultState().equals("RIFIUTATO") ||
 				    		student.getResultState().equals("ASSENTE")){
@@ -119,10 +121,7 @@ public class GoToEnrolledStudents extends HttpServlet {
 				        break;
 				    }
 				}
-				System.out.println(checkPublish);
-				System.out.println(checkVerbalize);
-			}
-				
+			}		
 		} catch (SQLException e) {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled students database extraction");
