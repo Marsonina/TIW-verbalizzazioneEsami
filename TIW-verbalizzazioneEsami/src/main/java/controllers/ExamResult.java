@@ -34,55 +34,62 @@ public class ExamResult extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
+		//connecting with DB
 		connection = DbConnection.connect(getServletContext());
+		//configuring template
 		templateEngine = Templating.template(getServletContext());
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		HttpSession s = request.getSession();
+		
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
 		int chosenCourseId = Integer.parseInt(chosenCourse);
 		String chosenExam = request.getParameter("examDate");
+		
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 		ExamStudent examStudent = new ExamStudent();
 		
 		try {			 
 			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(chosenCourse));
-			
+			//checking if the course selected exists
 			if(cDao.findCourse() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
 				return;
 			}
+			//checking if the current student attends the selected course
 			List<String> currStudents = cDao.findAttendingStudent();
 			if(currStudents == null || !currStudents.contains(user.getMatricola())) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended course");
 				return;
-			}
-						
+			}				
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student's exams database extraction");
 		}
 		
-		try {		 
+		try {	
+			//checking if the exam date selected exists
 			ExamDAO exDao = new ExamDAO(connection,chosenCourseId ,chosenExam );		
 			if(exDao.findExam() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
 			}
+			//checking if the student is enrolled to a specific exam in a specific date
 			List<String> examStudents = exDao.findExamStudent();
 			if(examStudents == null || !examStudents.contains(user.getMatricola())) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended exam");
 				return;
-			}
-			
+			}		
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student's exams database extraction");
 		}
 		
 		
 		try {
+			//we obtain all the relevant infos about the student enrolled to the exam 
 			examStudent = eDao.getResult(user.getMatricola());
 		} catch (SQLException e) {
 			// throw new ServletException(e);

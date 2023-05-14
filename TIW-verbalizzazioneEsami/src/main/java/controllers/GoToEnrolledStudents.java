@@ -52,15 +52,13 @@ public class GoToEnrolledStudents extends HttpServlet {
 		boolean checkPublish = false;
 		boolean checkVerbalize = false;
 
-		System.out.print(orderInput);
 		if(order == null) {
 			order = "ASC";
 		}else if(order.equals("ASC")) {
 			order = "DESC";
 		}else if(order.equals("DESC")) {
 			order = "ASC";
-		}
-			
+		}		
 		
 		if(orderInput == null) {
 			orderInput = "matricolaStudent";

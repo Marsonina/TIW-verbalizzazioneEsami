@@ -52,7 +52,7 @@ public class CourseDAO {
 		}
 	}
 
-	//method that find all the students that are enrolled to a specific exam
+	//method that find all the students that are enrolled to a specific course
 	public List<String> findAttendingStudent() throws SQLException {
 		List<String> users = new ArrayList<String>();
 		String query = "SELECT matricolaStudent FROM course_students WHERE courseId= ?";
