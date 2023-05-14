@@ -3,6 +3,9 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,8 +22,7 @@ public class ModifyMark extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	
-	
-
+	List<String> voti = new ArrayList<>(Arrays.asList("ASSENTE", "RIPROVATO", "RIMANDATO", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "30L"));
 
 	public ModifyMark() {
 		super();
@@ -44,7 +46,7 @@ public class ModifyMark extends HttpServlet {
 		String examMark = request.getParameter("examMark");
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 		
-		if(examMark.equals("30L") || examMark.equals("RIPROVATO") || examMark.equals("ASSENTE") || (Integer.parseInt(examMark)>=18 && Integer.parseInt(examMark)<=30)){
+		if(voti.contains(examMark)){
 			try {
 			eDao.changeMark(matricolaSelected, examMark);
 			}catch (SQLException e) {
