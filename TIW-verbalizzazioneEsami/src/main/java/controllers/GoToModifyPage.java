@@ -71,14 +71,26 @@ public class GoToModifyPage extends HttpServlet {
 		}
 		
 		try { 
-			ExamDAO exDao = new ExamDAO(connection, chosenCourseId , chosenExam);
 			//checking if the the exam date is correct
-			if(exDao.findExam() == null) {
+			if(eDao.findExam() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
 			}
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+		}
+		
+		try {
+			ExamStudent examStud = new ExamStudent();
+			examStud = eDao.getResult(matricolaExam);
+			System.out.println(examStud.getResultState());
+			//checking if the mark is already published or verbalized
+			if((examStud.getResultState()).equals("PUBBLICATO")|| (examStud.getResultState()).equals("VERBALIZZATO")) {
+				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Trying to access to a published or verbalized exam");
+				return;
+			}
+		}catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Failure in student's exams database updating");
 		}
 		
 		

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import beans.ExamStudent;
 import beans.User;
 import utility.DbConnection;
 import dao.CourseDAO;
@@ -81,13 +82,19 @@ public class ModifyMark extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
+		//checking if the mark inserted is valid
 		if(marks.contains(examMark)){
+			ExamStudent examStud = new ExamStudent();
 			try {
-			eDao.changeMark(matricolaSelected, examMark);
+				examStud = eDao.getResult(matricolaSelected);
+				//checking if the mark is already published or verbalized
+				if(!(examStud.getResultState()).equals("PUBBLICATO")&& !(examStud.getResultState()).equals("VERBALIZZATO")) {
+					//chenge the mark of the student
+					eDao.changeMark(matricolaSelected, examMark);
+				}
 			}catch (SQLException e) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Failure in student's exams database updating");
 			}
-		
 		
 		String path = "/GoToEnrolledStudents";
 		request.setAttribute("examDate", chosenExam);
