@@ -31,6 +31,7 @@ public class VerbalizeResults extends HttpServlet {
 	private TemplateEngine templateEngine;
 	private Connection connection = null;
 	
+	
 	public VerbalizeResults() {
 		super();
 	}
@@ -55,6 +56,8 @@ public class VerbalizeResults extends HttpServlet {
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
 		Verbal verbal = new Verbal();
 
+		boolean checkVerbalize = false;
+		
 		try {
 			//checking if the selected course exists
 			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
@@ -78,18 +81,37 @@ public class VerbalizeResults extends HttpServlet {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
 			}
+			
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
+		
 		
 		try {
 			CourseDAO cDAO = new CourseDAO(connection, Integer.parseInt(selectedCourse));
 			String matricolaTeacher = cDAO.findOwnerTeacher();
 			verbal.setMatricolaTeacher(matricolaTeacher);
 			try {
+				students = eDao.getVerbalizedResult();
+				
+				if(students == null) {
+					response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "No verbalizable results");
+				}else{
+				
+					for (ExamStudent student : students) {
+					    if (student.getResultState().equals("PUBBLICATO") || student.getResultState().equals("RIFIUTATO") ||
+					    		student.getResultState().equals("ASSENTE")){
+					        checkVerbalize = true;
+					        break;
+					    }
+					}
+					
+					if(!checkVerbalize) {
+						response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "No verbalizable results");
+					}
+				}
 				int id = eDao.createVerbal(verbal);
 				verbal.setVerbalId(id);
-				students = eDao.getVerbalizedResult();
 				eDao.verbalize();
 
 			} catch (SQLException e) {
