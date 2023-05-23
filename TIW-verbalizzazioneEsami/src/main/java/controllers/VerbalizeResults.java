@@ -32,6 +32,7 @@ public class VerbalizeResults extends HttpServlet {
 	private TemplateEngine templateEngine;
 	private Connection connection = null;
 	
+	
 	public VerbalizeResults() {
 		super();
 	}
@@ -57,11 +58,13 @@ public class VerbalizeResults extends HttpServlet {
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId ,selectedDate);
 		Verbal verbal = new Verbal();
 
+		boolean checkVerbalize = false;
+		
 		//check permissions
 		CheckPermissions checker = new CheckPermissions(connection, user, request, response);
-		try {
+		try { 
 			//checking if the selected course is correct and "owned" by the teacher
-			checker.checkTeacherPermissions(chosenCourseId);	
+			checker.checkTeacherPermissions(chosenCourseId);
 		}catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in courses info database extraction");
 		}
@@ -70,29 +73,47 @@ public class VerbalizeResults extends HttpServlet {
 			//checking if the the exam date is correct
 			checker.checkExamDate(eDao);
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in courses info database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in exam info database extraction");
 		}
 		
+		
 		try {
-			CourseDAO cDAO = new CourseDAO(connection, chosenCourseId);
+			CourseDAO cDAO = new CourseDAO(connection, Integer.parseInt(selectedCourse));
 			String matricolaTeacher = cDAO.findOwnerTeacher();
 			verbal.setMatricolaTeacher(matricolaTeacher);
 			try {
+				students = eDao.getVerbalizedResult();
+				
+				if(students == null) {
+					response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "No verbalizable results");
+				}else{
+				
+					for (ExamStudent student : students) {
+					    if (student.getResultState().equals("PUBBLICATO") || student.getResultState().equals("RIFIUTATO") ||
+					    		student.getResultState().equals("ASSENTE")){
+					        checkVerbalize = true;
+					        break;
+					    }
+					}
+					
+					if(!checkVerbalize) {
+						response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "No verbalizable results");
+					}
+				}
 				int id = eDao.createVerbal(verbal);
 				verbal.setVerbalId(id);
+				eDao.verbalize();
+
 			} catch (SQLException e) {
-				response.sendError(HttpServletResponse.SC_BAD_GATEWAY,"Failure in verbal database updating");
 				try {
-					students = eDao.getVerbalizedResult();
-					eDao.verbalize();
 			        connection.rollback();
 			    } catch (SQLException e1) {
-			    	response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled exam students database extraction");
+			        e1.printStackTrace();
 			    }
 			}	
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in course info database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in verbalize results");
 
 		}
 		
