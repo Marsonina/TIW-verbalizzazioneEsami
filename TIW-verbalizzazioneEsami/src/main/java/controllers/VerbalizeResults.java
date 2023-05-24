@@ -83,7 +83,6 @@ public class VerbalizeResults extends HttpServlet {
 			verbal.setMatricolaTeacher(matricolaTeacher);
 			try {
 				students = eDao.getVerbalizedResult();
-				
 				if(students == null) {
 					response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "No verbalizable results");
 				}else{
@@ -105,6 +104,7 @@ public class VerbalizeResults extends HttpServlet {
 				eDao.verbalize();
 
 			} catch (SQLException e) {
+				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled exam students info database extraction");
 				try {
 			        connection.rollback();
 			    } catch (SQLException e1) {
@@ -113,7 +113,7 @@ public class VerbalizeResults extends HttpServlet {
 			}	
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in verbalize results");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in course info database extraction");
 
 		}
 		

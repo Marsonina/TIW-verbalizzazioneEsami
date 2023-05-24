@@ -48,6 +48,7 @@ public class GoToHomeStudent extends HttpServlet {
 			throws ServletException, IOException {
 		
 		HttpSession s = request.getSession();
+		String homePage = request.getServletContext().getContextPath() + "/GoToHomeStudent";
 		
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
@@ -68,19 +69,19 @@ public class GoToHomeStudent extends HttpServlet {
 				CourseDAO cDao = new CourseDAO(connection, chosenCourseId);	
 				//checking if the selection of the course is correct
 				if(cDao.findCourse() == null) {
-					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
+					response.sendRedirect(homePage);
 					return;
 				}
 				//checking if the current student is enrolled to the selected course
 				List<String> currStudents = cDao.findAttendingStudent();
 				if(currStudents == null || !currStudents.contains(user.getMatricola())) {
-					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended course");
+					response.sendRedirect(homePage);
 					return;
 				}
 			}
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students's exams database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students' courses database extraction");
 		}
 
 		String path = "/WEB-INF/StudentHomePage.html";
