@@ -67,6 +67,7 @@ public class ExamDAO {
 	            + "WHERE matricola = matricolaStudent AND courseId = ? AND examDate = ? "
 	            + "ORDER BY ";
 	    switch (defaultOrder) {
+	    	//se due studenti hanno lo stesso nome si passa alla valutazione del cognome, se anche questo è uguale si valuta la matricola
 	        case "name":
 	            query += "name " + orderDirection + ", surname " + orderDirection + ", matricolaStudent " + orderDirection;
 	            break;
@@ -83,7 +84,7 @@ public class ExamDAO {
 	            query += "result " + orderDirection + ", name " + orderDirection + ", surname " + orderDirection;
 	            break;
 	        default:
-	            query += "name " + orderDirection + ", surname " + orderDirection + ", matricolaStudent " + orderDirection;
+	        	query += "matricolaStudent " + orderDirection + ", name " + orderDirection + ", surname " + orderDirection;
 	            break;
 	    }
 	    try (PreparedStatement pstatement = connection.prepareStatement(query);) {

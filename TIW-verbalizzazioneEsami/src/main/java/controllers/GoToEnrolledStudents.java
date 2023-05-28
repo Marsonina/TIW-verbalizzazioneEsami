@@ -70,6 +70,8 @@ public class GoToEnrolledStudents extends HttpServlet {
 		//we set a default order 
 		if(orderInput == null) {
 			orderInput = "matricolaStudent";
+		}else if(orderInput.equals("result")) {
+			
 		}
 		
 		//check permissions
