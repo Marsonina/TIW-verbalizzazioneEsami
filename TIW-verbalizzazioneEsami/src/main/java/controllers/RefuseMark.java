@@ -54,14 +54,13 @@ public class RefuseMark extends HttpServlet {
 		ExamStudent examStudent = new ExamStudent();
 		
 		try {	
-			//checking if the exam date selected exists
-			ExamDAO exDao = new ExamDAO(connection,chosenCourseId ,chosenExam );		
-			if(exDao.findExam() == null) {
+			//checking if the exam date selected exists		
+			if(eDao.findExam() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
 			}
 			//checking if the student is enrolled to a specific exam in a specific date
-			List<String> examStudents = exDao.findExamStudent();
+			List<String> examStudents = eDao.findExamStudent();
 			if(examStudents == null || !examStudents.contains(user.getMatricola())) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended exam");
 				return;

@@ -3,6 +3,8 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Teacher Home Page</title>
+<link rel="stylesheet" type="text/css" media="all"
+	href="../mystyle.css" th:href="@{/mystyle.css}" />
 </head>
 <body>
 	<div align="right">
@@ -32,7 +34,7 @@
 						</tr>
 					</thead>
 					<tbody>
-					<tr th:each="c : ${courses}">
+					<tr th:each="c : ${courses}" th:class="(${c.courseId} == ${courseId})? 'current'">
 							<td th:text="${c.courseId}"></td>
 							<td><a href="TeacherHomePage.html"
 								th:href="@{/GoToHomeTeacher(courseId=${c.courseId})}"><span

@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.sql.Connection;
 import javax.servlet.ServletException;
@@ -43,7 +44,7 @@ public class CheckLogin extends HttpServlet {
 		
 		UserDAO usr = new UserDAO(connection);
 		User u = null;
-		
+		String path = getServletContext().getContextPath();
 		
 		try {
 			if(role.equals("teacher"))
@@ -59,9 +60,9 @@ public class CheckLogin extends HttpServlet {
 		}
 		
 		
-		String path = getServletContext().getContextPath();
+		
 		if (u == null) {
-			path = getServletContext().getContextPath() + "/index.html";
+		    path = getServletContext().getContextPath() + "/index.html?";
 		} else {
 			HttpSession session = request.getSession();
 			request.getSession().setAttribute("user", u);

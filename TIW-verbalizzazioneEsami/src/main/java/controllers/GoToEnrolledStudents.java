@@ -71,6 +71,7 @@ public class GoToEnrolledStudents extends HttpServlet {
 			orderInput = "matricolaStudent";
 		}
 		
+		
 		try { 
 			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
 			//checking if the selected course exists
@@ -89,9 +90,8 @@ public class GoToEnrolledStudents extends HttpServlet {
 		}
 		
 		try { 
-			ExamDAO exDao = new ExamDAO(connection,Integer.parseInt(selectedCourse) ,selectedDate );
 			//checking if the the exam date is correct
-			if(exDao.findExam() == null) {
+			if(eDao.findExam() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
 			}

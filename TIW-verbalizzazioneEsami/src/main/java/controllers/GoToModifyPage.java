@@ -71,9 +71,8 @@ public class GoToModifyPage extends HttpServlet {
 		}
 		
 		try { 
-			ExamDAO exDao = new ExamDAO(connection, chosenCourseId , chosenExam);
 			//checking if the the exam date is correct
-			if(exDao.findExam() == null) {
+			if(eDao.findExam() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
 			}

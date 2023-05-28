@@ -76,8 +76,7 @@ public class VerbalizeResults extends HttpServlet {
 		}
 		try {
 			//checking if the the exam date is correct
-			ExamDAO exDao = new ExamDAO(connection,Integer.parseInt(selectedCourse) ,selectedDate );
-			if(exDao.findExam() == null) {
+			if(eDao.findExam() == null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
 				return;
 			}
