@@ -14,9 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import beans.ExamStudent;
 import beans.User;
+import utility.CheckPermissions;
 import utility.DbConnection;
-import dao.CourseDAO;
 import dao.ExamDAO;
 
 @WebServlet("/ModifyMark")
@@ -53,41 +54,36 @@ public class ModifyMark extends HttpServlet {
 		String examMark = request.getParameter("examMark");
 		
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
-		
+
+		//check permissions
+		CheckPermissions checker = new CheckPermissions(connection, user, request, response);
 		try { 
-			//checking if the selected course exists
-			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
-			if(cDao.findCourse() == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
-				return;
-			}
-			//checking if the current teacher owns the selected course
-			String currTeacher = cDao.findOwnerTeacher();
-			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-own course");
-				return;
-			}
-		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+			//checking if the selected course is correct and "owned" by the teacher
+			checker.checkTeacherPermissions(chosenCourseId);
+		}catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in courses info database extraction");
 		}
 		
 		try {
 			//checking if the the exam date is correct
-			if(eDao.findExam() == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
-				return;
-			}
+			checker.checkExamDate(eDao);
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in exam info database extraction");
 		}
 		
+		//checking if the mark inserted is valid
 		if(marks.contains(examMark)){
+			ExamStudent examStud = new ExamStudent();
 			try {
-			eDao.changeMark(matricolaSelected, examMark);
+				examStud = eDao.getResult(matricolaSelected);
+				//checking if the mark is already published or verbalized
+				if(!(examStud.getResultState()).equals("PUBBLICATO")&& !(examStud.getResultState()).equals("VERBALIZZATO")) {
+					//change the mark of the student
+					eDao.changeMark(matricolaSelected, examMark);
+				}
 			}catch (SQLException e) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Failure in student's exams database updating");
+				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student's exams database extraction");
 			}
-		
 		
 		String path = "/GoToEnrolledStudents";
 		request.setAttribute("examDate", chosenExam);

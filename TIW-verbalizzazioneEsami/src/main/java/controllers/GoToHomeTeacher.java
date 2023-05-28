@@ -20,8 +20,8 @@ import org.thymeleaf.context.WebContext;
 import beans.Course;
 import beans.Exam;
 import beans.User;
-import dao.CourseDAO;
 import dao.TeacherDAO;
+import utility.CheckPermissions;
 import utility.DbConnection;
 import utility.Templating;
 
@@ -64,24 +64,14 @@ public class GoToHomeTeacher extends HttpServlet {
 				chosenCourseId = Integer.parseInt(chosenCourse);
 				//exam's available dates corresponding to the selected course
 				exams = tDao.getExamDates(chosenCourseId);
-				CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
-				//checking if the selection of the course is correct
-				if(cDao.findCourse() == null) {
-					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
-					return;
-				}
-				//checking if the current teacher owns the selected course
-				String currTeacher = cDao.findOwnerTeacher();
-				if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
-					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-own course");
-					return;
-				}
+				
+				//check permissions
+				CheckPermissions checker = new CheckPermissions(connection, user, request, response);
+				checker.checkTeacherPermissions(chosenCourseId);
 			}
-			
-			
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failure in course info database extraction");
 		}
 		
 		String path = "/WEB-INF/TeacherHomePage.html";

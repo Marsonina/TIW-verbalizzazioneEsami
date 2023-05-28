@@ -44,6 +44,7 @@ public class RefuseMark extends HttpServlet {
 			throws ServletException, IOException {
 		
 		HttpSession s = request.getSession();
+		String homePage = request.getServletContext().getContextPath() + "/GoToHomeStudent";
 		
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
@@ -54,28 +55,29 @@ public class RefuseMark extends HttpServlet {
 		ExamStudent examStudent = new ExamStudent();
 		
 		try {	
-			//checking if the exam date selected exists		
-			if(eDao.findExam() == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
+			//checking if the exam date selected exists
+			ExamDAO exDao = new ExamDAO(connection,chosenCourseId ,chosenExam );		
+			if(exDao.findExam() == null) {
+				response.sendRedirect(homePage);
 				return;
 			}
 			//checking if the student is enrolled to a specific exam in a specific date
-			List<String> examStudents = eDao.findExamStudent();
+			List<String> examStudents = exDao.findExamStudent();
 			if(examStudents == null || !examStudents.contains(user.getMatricola())) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-attended exam");
+				response.sendRedirect(homePage);
 				return;
 			}		
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student's exams database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students' exams database extraction");
 		}
 		
 		try {
 			//change the resultState of the student to "RIFIUTATO"
-			eDao.Refuse(user.getMatricola());
+			eDao.refuse(user.getMatricola());
 			examStudent = eDao.getResult(user.getMatricola());
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students's infos database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students' exam info database extraction");
 		}
 
 		String path = "/WEB-INF/ExamResultPage.html";

@@ -18,10 +18,10 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
 import beans.User;
+import utility.CheckPermissions;
 import utility.DbConnection;
 import utility.Templating;
 import beans.ExamStudent;
-import dao.CourseDAO;
 import dao.ExamDAO;
 
 @WebServlet("/GoToEnrolledStudents")
@@ -51,11 +51,12 @@ public class GoToEnrolledStudents extends HttpServlet {
 		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
 		String selectedCourse = request.getParameter("courseId");
+		int chosenCourseId = Integer.parseInt(selectedCourse);
 		String order = request.getParameter("order");
 		String orderInput = request.getParameter("orderInput");
 		
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
-		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
+		ExamDAO eDao = new ExamDAO(connection, chosenCourseId ,selectedDate);
 
 		//we set the order variable depending on the previous 
 		//value in order to invert the current order of variables
@@ -71,32 +72,20 @@ public class GoToEnrolledStudents extends HttpServlet {
 			orderInput = "matricolaStudent";
 		}
 		
-		
+		//check permissions
+		CheckPermissions checker = new CheckPermissions(connection, user, request, response);
 		try { 
-			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
-			//checking if the selected course exists
-			if(cDao.findCourse() == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
-				return;
-			}
-			//checking if the current teacher owns the selected course
-			String currTeacher = cDao.findOwnerTeacher();
-			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-own course");
-				return;
-			}
-		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+			//checking if the selected course is correct and "owned" by the teacher
+			checker.checkTeacherPermissions(chosenCourseId);
+		}catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in courses info database extraction");
 		}
 		
-		try { 
+		try {
 			//checking if the the exam date is correct
-			if(eDao.findExam() == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
-				return;
-			}
+			checker.checkExamDate(eDao);
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in exam info database extraction");
 		}
 		
 		try {
@@ -130,7 +119,7 @@ public class GoToEnrolledStudents extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("students", students);
-		ctx.setVariable("courseId",selectedCourse);
+		ctx.setVariable("courseId",chosenCourseId);
 		ctx.setVariable("examDate", selectedDate);
 		ctx.setVariable("order", order);
 		ctx.setVariable("orderInput", orderInput);

@@ -10,6 +10,7 @@ import javax.servlet.UnavailableException;
 
  
 public class DbConnection{
+	
 	public static Connection connect(ServletContext context) throws UnavailableException {
 		try {
 			String driver = context.getInitParameter("dbDriver");

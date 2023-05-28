@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import beans.User;
-import dao.CourseDAO;
 import dao.ExamDAO;
+import utility.CheckPermissions;
 import utility.DbConnection;
 
 
@@ -44,27 +44,20 @@ public class PublishResults extends HttpServlet {
 		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
 		
 		try { 
-			//checking if the selected course exists
-			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
-			if(cDao.findCourse() == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
-				return;
-			}
-			//checking if the current teacher owns the selected course
-			String currTeacher = cDao.findOwnerTeacher();
-			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-own course");
-				return;
-			}
+			//check permissions
+			CheckPermissions checker = new CheckPermissions(connection, user, request, response);
+			//checking if the selected course is correct and "owned" by the teacher
+			checker.checkTeacherPermissions(chosenCourseId);
+			//checking if the the exam date is correct
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failure in teacher's exams database extraction");
 		}
 		
 		try {
 			eDao.publish();	
 		} catch (SQLException e) {
 			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled students database extraction");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failure in database publishment updating");
 		}
 		
 		String path = "/GoToEnrolledStudents";
@@ -75,7 +68,6 @@ public class PublishResults extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

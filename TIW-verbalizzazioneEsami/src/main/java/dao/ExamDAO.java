@@ -203,7 +203,7 @@ public class ExamDAO {
 	}
 	
 	//method that updates the resultState and result in case of a student refuse a mark
-	public void Refuse(String matricola) throws SQLException {
+	public void refuse(String matricola) throws SQLException {
 	String query = "UPDATE exam_students " +
             "SET resultState = 'RIFIUTATO', result = 'RIMANDATO' " +
             "WHERE resultState = 'PUBBLICATO' AND matricolaStudent= ? AND courseId = ? AND examDate = ?";
