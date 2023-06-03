@@ -3,6 +3,8 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Enrolled Students Page</title>
+<link rel="stylesheet" type="text/css" media="all"
+	href="../mystyle.css" th:href="@{/mystyle.css}" />
 </head>
 <body>
 	<div align="right">
@@ -82,7 +84,8 @@
 						</tr>
 					</thead>
 					<tbody>
-					<tr th:each="s : ${students}">
+					<tr th:each="s : ${students}" th:class="${s.resultState == 'NON INSERITO'} ? 'noninserito' : (${s.resultState == 'INSERITO'} ? 'inserito' : (${s.resultState == 'PUBBLICATO'} ? 'pubblicato' : (${s.resultState == 'VERBALIZZATO'} ? 'verbalizzato' : '')))">
+
 							<td th:text="${s.matricola}">111111</td>
 							<td th:text="${s.name}">name</td>
 							<td th:text="${s.surname}">surname</td>
