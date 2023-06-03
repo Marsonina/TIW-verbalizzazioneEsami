@@ -16,8 +16,8 @@ import javax.servlet.http.HttpSession;
 
 import beans.ExamStudent;
 import beans.User;
-import utility.CheckPermissions;
 import utility.DbConnection;
+import dao.CourseDAO;
 import dao.ExamDAO;
 
 @WebServlet("/ModifyMark")
@@ -44,6 +44,7 @@ public class ModifyMark extends HttpServlet {
 			throws ServletException, IOException {
 		
 		HttpSession s = request.getSession();
+		String homePage = request.getServletContext().getContextPath() + "/GoToHomeTeacher";
 		
 		User user = (User) s.getAttribute("user");
 		
@@ -56,19 +57,31 @@ public class ModifyMark extends HttpServlet {
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 
 		//check permissions
-		CheckPermissions checker = new CheckPermissions(connection, user, request, response);
 		try { 
-			//checking if the selected course is correct and "owned" by the teacher
-			checker.checkTeacherPermissions(chosenCourseId);
-		}catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in courses info database extraction");
+			//checking if the selected course exists
+			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
+			if(cDao.findCourse() == null) {
+				response.sendRedirect(homePage);
+				return;
+			}
+			//checking if the current teacher owns the selected course
+			String currTeacher = cDao.findOwnerTeacher();
+			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
+				response.sendRedirect(homePage);
+				return;
+			}
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
-		
+		//check permissions
 		try {
 			//checking if the the exam date is correct
-			checker.checkExamDate(eDao);
+			if(eDao.findExam() == null) {
+				response.sendRedirect(homePage);
+				return;
+			}
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in exam info database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
 		//checking if the mark inserted is valid

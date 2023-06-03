@@ -54,6 +54,7 @@ public class RefuseMark extends HttpServlet {
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 		ExamStudent examStudent = new ExamStudent();
 		
+		//check permissions
 		try {	
 			//checking if the exam date selected exists		
 			if(eDao.findExam() == null) {

@@ -54,8 +54,9 @@ public class ExamResult extends HttpServlet {
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 		ExamStudent examStudent = new ExamStudent();
 		
+		//check permissions
 		try {			 
-			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(chosenCourse));
+			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
 			//checking if the course selected exists
 			if(cDao.findCourse() == null) {
 				response.sendRedirect(homePage);
@@ -70,7 +71,7 @@ public class ExamResult extends HttpServlet {
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in students' courses database extraction");
 		}
-		
+		//check permissions
 		try {	
 			//checking if the exam date selected exists		
 			if(eDao.findExam() == null) {

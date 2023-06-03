@@ -21,7 +21,6 @@ import beans.ExamStudent;
 import beans.User;
 import dao.CourseDAO;
 import dao.ExamDAO;
-import utility.CheckPermissions;
 import utility.DbConnection;
 import utility.Templating;
 import beans.Verbal;
@@ -61,21 +60,33 @@ public class VerbalizeResults extends HttpServlet {
 		boolean checkVerbalize = false;
 		
 		//check permissions
-		CheckPermissions checker = new CheckPermissions(connection, user, request, response);
-		try { 
-			//checking if the selected course is correct and "owned" by the teacher
-			checker.checkTeacherPermissions(chosenCourseId);
-		}catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in courses info database extraction");
+		try {
+			//checking if the selected course exists
+			CourseDAO cDao = new CourseDAO(connection, Integer.parseInt(selectedCourse));
+			if(cDao.findCourse() == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with course choice");
+				return;
+			}
+			//checking if the current teacher owns the selected course
+			String currTeacher = cDao.findOwnerTeacher();
+			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access non-owned course");
+				return;
+			}	
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
-		
+		//check permissions
 		try {
 			//checking if the the exam date is correct
-			checker.checkExamDate(eDao);
+			ExamDAO exDao = new ExamDAO(connection,Integer.parseInt(selectedCourse) ,selectedDate );
+			if(exDao.findExam() == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error with exam choice");
+				return;
+			}
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in exam info database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
-		
 		
 		try {
 			CourseDAO cDAO = new CourseDAO(connection, Integer.parseInt(selectedCourse));
