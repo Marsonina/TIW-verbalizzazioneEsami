@@ -55,9 +55,9 @@ public class GoToEnrolledStudents extends HttpServlet {
 		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
 		String selectedCourse = request.getParameter("courseId");
-
 		String order = request.getParameter("order");
 		String orderInput = request.getParameter("orderInput");
+		int chosenCourseId = 0;
 
 		if (selectedCourse == null || selectedCourse.isEmpty() || selectedDate == null || selectedDate.isEmpty()) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
@@ -72,13 +72,20 @@ public class GoToEnrolledStudents extends HttpServlet {
 			return;
         }
         
-		int chosenCourseId = Integer.parseInt(selectedCourse);
+        try {
+			chosenCourseId = Integer.parseInt(selectedCourse);
+			}catch(NumberFormatException e) {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.getWriter().println("Bad request, retry!");
+				return;
+			}
+        
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId ,selectedDate);
 
 		//we set the order variable depending on the previous 
 		//value in order to invert the current order of variables
-		if(order == null || !order.equals("ASC") || !order.equals("DESC")) {
+		if(order == null) {
 			order = "ASC";
 		}else if(order.equals("ASC")) {
 			order = "DESC";
@@ -87,10 +94,6 @@ public class GoToEnrolledStudents extends HttpServlet {
 		}		
 		//we set a default order 
 		if(orderInput == null) {
-			orderInput = "matricolaStudent";
-		}else if(orderInput.equals("result")) {
-			
-		}else {
 			orderInput = "matricolaStudent";
 		}
 		

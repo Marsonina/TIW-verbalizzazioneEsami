@@ -104,6 +104,10 @@ public class ModifyMark extends HttpServlet {
 			ExamStudent examStud = new ExamStudent();
 			try {
 				examStud = eDao.getResult(matricolaSelected);
+				if(examStud == null) {
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "The selected student doesn't exist");
+					return;
+				}
 				//checking if the mark is already published or verbalized
 				if(!(examStud.getResultState()).equals("PUBBLICATO")&& !(examStud.getResultState()).equals("VERBALIZZATO")) {
 					//change the mark of the student
@@ -111,6 +115,7 @@ public class ModifyMark extends HttpServlet {
 				}
 			}catch (SQLException e) {
 				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student's exams database extraction");
+				return;
 			}
 		
 		String path = "/GoToEnrolledStudents";

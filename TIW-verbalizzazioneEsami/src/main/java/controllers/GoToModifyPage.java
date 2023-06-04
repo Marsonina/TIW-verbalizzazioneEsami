@@ -100,7 +100,10 @@ public class GoToModifyPage extends HttpServlet {
 		try {
 			ExamStudent examStud = new ExamStudent();
 			examStud = eDao.getResult(matricolaExam);
-			System.out.println(examStud.getResultState());
+			if(examStud == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "The selected student doesn't exist");
+				return;
+			}
 			//checking if the mark is already published or verbalized
 			if((examStud.getResultState()).equals("PUBBLICATO")|| (examStud.getResultState()).equals("VERBALIZZATO")) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access to a published or verbalized exam");
@@ -112,6 +115,10 @@ public class GoToModifyPage extends HttpServlet {
 		
 		try {
 			examStudent = eDao.getResult(matricolaExam);
+			if(examStudent == null) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "The student isn't correct");
+				return;
+			}
 			//checking if the mark is already published or verbalized
 			if((examStudent.getResultState()).equals("PUBBLICATO")|| (examStudent.getResultState()).equals("VERBALIZZATO")) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access to a published or verbalized exam");

@@ -46,7 +46,7 @@ public class CheckLogin extends HttpServlet {
 		String path = getServletContext().getContextPath();
 		String loginpath = request.getServletContext().getContextPath() + "/index.html";
 		
-		if (usrn == null || usrn.isEmpty() || pwd == null || pwd.isEmpty()) {
+		if (usrn == null || usrn.isEmpty() || pwd == null || pwd.isEmpty() || role == null) {
 			response.sendRedirect(loginpath);
 			return;
 		}

@@ -67,7 +67,13 @@ public class GoToHomeStudent extends HttpServlet {
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
 					return;
 				}else {
+				try {
 					chosenCourseId = Integer.parseInt(chosenCourse);
+					}catch(NumberFormatException e) {
+						response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+						response.getWriter().println("Bad request, retry!");
+						return;
+					}
 					//exam's available dates corresponding to the selected course
 					exams = sDao.getExamDates(chosenCourseId);
 					CourseDAO cDao = new CourseDAO(connection, chosenCourseId);	

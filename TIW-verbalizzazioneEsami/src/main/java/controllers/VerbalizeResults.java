@@ -134,7 +134,7 @@ public class VerbalizeResults extends HttpServlet {
 				try {
 			        connection.rollback();
 			    } catch (SQLException e1) {
-			        e1.printStackTrace();
+			    	response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in course info database extraction");
 			    }
 			}	
 		} catch (SQLException e) {
