@@ -3,6 +3,9 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,16 +55,30 @@ public class GoToEnrolledStudents extends HttpServlet {
 		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
 		String selectedCourse = request.getParameter("courseId");
-		int chosenCourseId = Integer.parseInt(selectedCourse);
+
 		String order = request.getParameter("order");
 		String orderInput = request.getParameter("orderInput");
-		
+
+		if (selectedCourse == null || selectedCourse.isEmpty() || selectedDate == null || selectedDate.isEmpty()) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
+			return;
+		}
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try {
+            LocalDate.parse(selectedDate, formatter);
+        } catch (DateTimeParseException e) {
+        	response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Date format error");
+			return;
+        }
+        
+		int chosenCourseId = Integer.parseInt(selectedCourse);
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId ,selectedDate);
 
 		//we set the order variable depending on the previous 
 		//value in order to invert the current order of variables
-		if(order == null) {
+		if(order == null || !order.equals("ASC") || !order.equals("DESC")) {
 			order = "ASC";
 		}else if(order.equals("ASC")) {
 			order = "DESC";
@@ -73,6 +90,8 @@ public class GoToEnrolledStudents extends HttpServlet {
 			orderInput = "matricolaStudent";
 		}else if(orderInput.equals("result")) {
 			
+		}else {
+			orderInput = "matricolaStudent";
 		}
 		
 		//check permissions

@@ -3,6 +3,9 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -47,10 +50,22 @@ public class GoToModifyPage extends HttpServlet {
 		
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
-		int chosenCourseId = Integer.parseInt(chosenCourse);
 		String chosenExam = request.getParameter("examDate");
 		String matricolaExam = request.getParameter("matricola");
 		
+		if (chosenCourse == null || chosenCourse.isEmpty() || chosenExam == null || chosenExam.isEmpty() || matricolaExam == null || matricolaExam.isEmpty()) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
+			return;
+		}
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try {
+            LocalDate.parse(chosenExam, formatter);
+        } catch (DateTimeParseException e) {
+        	response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Date format error");
+			return;
+        }
+		int chosenCourseId = Integer.parseInt(chosenCourse);
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 		ExamStudent examStudent = new ExamStudent();
 		

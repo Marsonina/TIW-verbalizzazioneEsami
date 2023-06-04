@@ -3,6 +3,9 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,11 +52,23 @@ public class ModifyMark extends HttpServlet {
 		User user = (User) s.getAttribute("user");
 		
 		String chosenCourse = request.getParameter("courseId");
-		int chosenCourseId = Integer.parseInt(chosenCourse);
 		String chosenExam = request.getParameter("examDate");
 		String matricolaSelected = request.getParameter("matricola");
 		String examMark = request.getParameter("examMark");
 		
+		if (chosenCourse == null || chosenCourse.isEmpty() || chosenExam == null || chosenExam.isEmpty() || matricolaSelected == null || matricolaSelected.isEmpty() || examMark == null || examMark.isEmpty()) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
+			return;
+		}
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try {
+            LocalDate.parse(chosenExam, formatter);
+        } catch (DateTimeParseException e) {
+        	response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Date format error");
+			return;
+        }
+		int chosenCourseId = Integer.parseInt(chosenCourse);
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 
 		//check permissions
