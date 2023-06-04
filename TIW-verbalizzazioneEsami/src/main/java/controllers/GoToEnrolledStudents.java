@@ -57,13 +57,11 @@ public class GoToEnrolledStudents extends HttpServlet {
 		String orderInput = request.getParameter("orderInput");
 		
 		//checking missing parameters
-		/*if (selectedDate == null || selectedDate.isEmpty()
-				|| selectedCourse == null || selectedCourse.isEmpty()
-				|| order == null || order.isEmpty()
-				|| orderInput == null || orderInput.isEmpty()) {
-			response.sendRedirect(homePage);
+		if (selectedDate == null || selectedDate.isEmpty()
+			|| selectedCourse == null || selectedCourse.isEmpty()) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
             return;
-        }*/
+        }
 		
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId ,selectedDate);
