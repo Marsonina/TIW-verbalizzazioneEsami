@@ -46,6 +46,7 @@ public class GoToEnrolledStudents extends HttpServlet {
 		boolean checkPublish = false;
 		boolean checkVerbalize = false;
 		
+		
 		HttpSession s = request.getSession();
 		
 		User user = (User) s.getAttribute("user");
@@ -79,15 +80,18 @@ public class GoToEnrolledStudents extends HttpServlet {
 		try { 
 			//checking if the selected course is correct and "owned" by the teacher
 			checker.checkTeacherPermissions(chosenCourseId);
-		}catch (SQLException e) {
+			
+		}catch (Exception e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in courses info database extraction");
+			return;
 		}
 		
 		try {
 			//checking if the the exam date is correct
 			checker.checkExamDate(eDao);
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in exam info database extraction");
+			return;
 		}
 		
 		try {

@@ -46,6 +46,7 @@ public class CheckPermissions {
 		String homePage = request.getServletContext().getContextPath() + "/GoToHomeTeacher";
 		if(eDao.findExam() == null) {
 			response.sendRedirect(homePage);
+			return;
 		}
 	}
 }

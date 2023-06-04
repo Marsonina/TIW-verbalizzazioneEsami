@@ -1,7 +1,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.sql.Connection;
 import javax.servlet.ServletException;
