@@ -17,9 +17,9 @@ import org.thymeleaf.context.WebContext;
 
 import beans.ExamStudent;
 import beans.User;
-import utility.CheckPermissions;
 import utility.DbConnection;
 import utility.Templating;
+import dao.CourseDAO;
 import dao.ExamDAO;
 
 @WebServlet("/GoToModifyPage")
@@ -43,6 +43,7 @@ public class GoToModifyPage extends HttpServlet {
 			throws ServletException, IOException {
 		
 		HttpSession s = request.getSession();
+		String homePage = request.getServletContext().getContextPath() + "/GoToHomeTeacher";
 		
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
@@ -54,19 +55,44 @@ public class GoToModifyPage extends HttpServlet {
 		ExamStudent examStudent = new ExamStudent();
 		
 		//check permissions
-		CheckPermissions checker = new CheckPermissions(connection, user, request, response);
 		try { 
-			//checking if the selected course is correct and "owned" by the teacher
-			checker.checkTeacherPermissions(chosenCourseId);
-		}catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in courses info database extraction");
+			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
+			//checking if the selected course exists
+			if(cDao.findCourse() == null) {
+				response.sendRedirect(homePage);
+				return;
+			}
+			String currTeacher = cDao.findOwnerTeacher();
+			//checking if the current teacher owns the selected course
+			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
+				response.sendRedirect(homePage);
+				return;
+			}
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+		}
+		//check permissions
+		try { 
+			//checking if the the exam date is correct
+			if(eDao.findExam() == null) {
+				response.sendRedirect(homePage);
+				return;
+			}
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
 		try {
-			//checking if the the exam date is correct
-			checker.checkExamDate(eDao);
-		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failure in exam info database extraction");
+			ExamStudent examStud = new ExamStudent();
+			examStud = eDao.getResult(matricolaExam);
+			System.out.println(examStud.getResultState());
+			//checking if the mark is already published or verbalized
+			if((examStud.getResultState()).equals("PUBBLICATO")|| (examStud.getResultState()).equals("VERBALIZZATO")) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Trying to access to a published or verbalized exam");
+				return;
+			}
+		}catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in student's exams database updating");
 		}
 		
 		try {

@@ -20,8 +20,8 @@ import org.thymeleaf.context.WebContext;
 import beans.Course;
 import beans.Exam;
 import beans.User;
+import dao.CourseDAO;
 import dao.TeacherDAO;
-import utility.CheckPermissions;
 import utility.DbConnection;
 import utility.Templating;
 
@@ -47,31 +47,38 @@ public class GoToHomeTeacher extends HttpServlet {
 			throws ServletException, IOException {
 		
 		HttpSession s = request.getSession();
+		String homePage = request.getServletContext().getContextPath() + "/GoToHomeTeacher";
 		
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
+		
 		
 		TeacherDAO tDao = new TeacherDAO(connection, user.getMatricola());
 		List<Course> courses = new ArrayList<Course>();
 		List<Exam> exams = new ArrayList<Exam>();
 		int chosenCourseId = 0;
 		
+		
 		try {
-			//courses held by the teacher
 			courses = tDao.getCourses();
-			
 			if (chosenCourse != null) { 
 				chosenCourseId = Integer.parseInt(chosenCourse);
-				//exam's available dates corresponding to the selected course
+				//exams corresponding to selected course
 				exams = tDao.getExamDates(chosenCourseId);
-				
 				//check permissions
-				CheckPermissions checker = new CheckPermissions(connection, user, request, response);
-				checker.checkTeacherPermissions(chosenCourseId);
+				CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
+				if(cDao.findCourse() == null) {
+					response.sendRedirect(homePage);
+					return;
+				}
+				String currTeacher = cDao.findOwnerTeacher();
+				if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
+					response.sendRedirect(homePage);
+					return;
+				}
 			}
 		} catch (SQLException e) {
-			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failure in course info database extraction");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failure in course's info database extraction");
 		}
 		
 		String path = "/WEB-INF/TeacherHomePage.html";

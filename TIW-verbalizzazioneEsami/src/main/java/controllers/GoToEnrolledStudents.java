@@ -18,10 +18,10 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
 import beans.User;
-import utility.CheckPermissions;
 import utility.DbConnection;
 import utility.Templating;
 import beans.ExamStudent;
+import dao.CourseDAO;
 import dao.ExamDAO;
 
 @WebServlet("/GoToEnrolledStudents")
@@ -46,8 +46,8 @@ public class GoToEnrolledStudents extends HttpServlet {
 		boolean checkPublish = false;
 		boolean checkVerbalize = false;
 		
-		
 		HttpSession s = request.getSession();
+		String homePage = request.getServletContext().getContextPath() + "/GoToHomeTeacher";
 		
 		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
@@ -76,22 +76,29 @@ public class GoToEnrolledStudents extends HttpServlet {
 		}
 		
 		//check permissions
-		CheckPermissions checker = new CheckPermissions(connection, user, request, response);
-		try { 
-			//checking if the selected course is correct and "owned" by the teacher
-			checker.checkTeacherPermissions(chosenCourseId);
-			
-		}catch (Exception e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in courses info database extraction");
-			return;
-		}
-		
 		try {
-			//checking if the the exam date is correct
-			checker.checkExamDate(eDao);
-		} catch (Exception e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in exam info database extraction");
-			return;
+			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
+			if(cDao.findCourse() == null) {
+				response.sendRedirect(homePage);
+				return;
+			}
+			String currTeacher = cDao.findOwnerTeacher();
+			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
+				response.sendRedirect(homePage);
+				return;
+			}		
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's database extraction");
+		}
+		//check permissions
+		try { 
+			ExamDAO exDao = new ExamDAO(connection, chosenCourseId,selectedDate );
+			if(exDao.findExam() == null) {
+				response.sendRedirect(homePage);
+				return;
+			}
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
 		try {
@@ -120,6 +127,7 @@ public class GoToEnrolledStudents extends HttpServlet {
 		} catch (SQLException e) {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in enrolled students database extraction");
+			return;
 		}
 		String path = "/WEB-INF/EnrolledStudentsPage.html";
 		ServletContext servletContext = getServletContext();

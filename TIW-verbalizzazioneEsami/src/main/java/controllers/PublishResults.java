@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import beans.User;
+import dao.CourseDAO;
 import dao.ExamDAO;
-import utility.CheckPermissions;
 import utility.DbConnection;
 
 
@@ -35,22 +35,31 @@ public class PublishResults extends HttpServlet {
 			throws ServletException, IOException {
 		
 		HttpSession s = request.getSession();
+		String homePage = request.getServletContext().getContextPath() + "/GoToHomeTeacher";
 		
 		User user = (User) s.getAttribute("user");
 		String selectedDate = request.getParameter("examDate");
 		String selectedCourse = request.getParameter("courseId");
 		int chosenCourseId = Integer.parseInt(selectedCourse);
 		
-		ExamDAO eDao = new ExamDAO(connection, Integer.parseInt(selectedCourse) ,selectedDate);
+		ExamDAO eDao = new ExamDAO(connection, chosenCourseId,selectedDate);
 		
+		//check permissions
 		try { 
-			//check permissions
-			CheckPermissions checker = new CheckPermissions(connection, user, request, response);
-			//checking if the selected course is correct and "owned" by the teacher
-			checker.checkTeacherPermissions(chosenCourseId);
-			//checking if the the exam date is correct
+			//checking if the selected course exists
+			CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
+			if(cDao.findCourse() == null) {
+				response.sendRedirect(homePage);
+				return;
+			}
+			//checking if the current teacher owns the selected course
+			String currTeacher = cDao.findOwnerTeacher();
+			if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
+				response.sendRedirect(homePage);
+				return;
+			}
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failure in teacher's exams database extraction");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
 		}
 		
 		try {

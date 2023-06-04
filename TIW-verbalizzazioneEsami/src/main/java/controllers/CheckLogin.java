@@ -44,6 +44,12 @@ public class CheckLogin extends HttpServlet {
 		UserDAO usr = new UserDAO(connection);
 		User u = null;
 		String path = getServletContext().getContextPath();
+		String loginpath = request.getServletContext().getContextPath() + "/index.html";
+		
+		if (usrn == null || usrn.isEmpty() || pwd == null || pwd.isEmpty()) {
+			response.sendRedirect(loginpath);
+			return;
+		}
 		
 		try {
 			if(role.equals("teacher"))

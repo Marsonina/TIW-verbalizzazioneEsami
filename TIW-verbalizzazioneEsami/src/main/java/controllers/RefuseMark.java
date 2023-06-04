@@ -54,15 +54,15 @@ public class RefuseMark extends HttpServlet {
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId, chosenExam);
 		ExamStudent examStudent = new ExamStudent();
 		
+		//check permissions
 		try {	
-			//checking if the exam date selected exists
-			ExamDAO exDao = new ExamDAO(connection,chosenCourseId ,chosenExam );		
-			if(exDao.findExam() == null) {
+			//checking if the exam date selected exists		
+			if(eDao.findExam() == null) {
 				response.sendRedirect(homePage);
 				return;
 			}
 			//checking if the student is enrolled to a specific exam in a specific date
-			List<String> examStudents = exDao.findExamStudent();
+			List<String> examStudents = eDao.findExamStudent();
 			if(examStudents == null || !examStudents.contains(user.getMatricola())) {
 				response.sendRedirect(homePage);
 				return;
