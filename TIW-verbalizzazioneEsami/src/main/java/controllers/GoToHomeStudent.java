@@ -53,12 +53,6 @@ public class GoToHomeStudent extends HttpServlet {
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
 		
-		//checking missing parameters
-		if (chosenCourse == null || chosenCourse.isEmpty()) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
-            return;
-        }
-		
 		StudentDAO sDao = new StudentDAO(connection, user.getMatricola());
 		List<Course> courses = new ArrayList<Course>();
 		List<Exam> exams = new ArrayList<Exam>();

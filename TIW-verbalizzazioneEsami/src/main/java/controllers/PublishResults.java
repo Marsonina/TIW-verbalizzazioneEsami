@@ -60,6 +60,7 @@ public class PublishResults extends HttpServlet {
 			}
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in teacher's exams database extraction");
+			return;
 		}
 		
 		try {
@@ -67,6 +68,7 @@ public class PublishResults extends HttpServlet {
 		} catch (SQLException e) {
 			// throw new ServletException(e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failure in database publishment updating");
+			return;
 		}
 		
 		String path = "/GoToEnrolledStudents";
