@@ -53,12 +53,6 @@ public class GoToHomeStudent extends HttpServlet {
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
 		
-		//checking missing parameters
-		if (chosenCourse == null || chosenCourse.isEmpty()) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
-            return;
-        }
-		
 		StudentDAO sDao = new StudentDAO(connection, user.getMatricola());
 		List<Course> courses = new ArrayList<Course>();
 		List<Exam> exams = new ArrayList<Exam>();
@@ -69,20 +63,25 @@ public class GoToHomeStudent extends HttpServlet {
 			courses = sDao.getCourses();
 			
 			if (chosenCourse != null) { 
-				chosenCourseId = Integer.parseInt(chosenCourse);
-				//exam's available dates corresponding to the selected course
-				exams = sDao.getExamDates(chosenCourseId);
-				CourseDAO cDao = new CourseDAO(connection, chosenCourseId);	
-				//checking if the selection of the course is correct
-				if(cDao.findCourse() == null) {
-					response.sendRedirect(homePage);
+				if(chosenCourse.isEmpty()) {
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
 					return;
-				}
-				//checking if the current student is enrolled to the selected course
-				List<String> currStudents = cDao.findAttendingStudent();
-				if(currStudents == null || !currStudents.contains(user.getMatricola())) {
-					response.sendRedirect(homePage);
-					return;
+				}else {
+					chosenCourseId = Integer.parseInt(chosenCourse);
+					//exam's available dates corresponding to the selected course
+					exams = sDao.getExamDates(chosenCourseId);
+					CourseDAO cDao = new CourseDAO(connection, chosenCourseId);	
+					//checking if the selection of the course is correct
+					if(cDao.findCourse() == null) {
+						response.sendRedirect(homePage);
+						return;
+					}
+					//checking if the current student is enrolled to the selected course
+					List<String> currStudents = cDao.findAttendingStudent();
+					if(currStudents == null || !currStudents.contains(user.getMatricola())) {
+						response.sendRedirect(homePage);
+						return;
+					}
 				}
 			}
 		} catch (SQLException e) {

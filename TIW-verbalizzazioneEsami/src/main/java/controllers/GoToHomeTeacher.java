@@ -52,7 +52,6 @@ public class GoToHomeTeacher extends HttpServlet {
 		User user = (User) s.getAttribute("user");
 		String chosenCourse = request.getParameter("courseId");
 		
-		
 		TeacherDAO tDao = new TeacherDAO(connection, user.getMatricola());
 		List<Course> courses = new ArrayList<Course>();
 		List<Exam> exams = new ArrayList<Exam>();
@@ -62,19 +61,24 @@ public class GoToHomeTeacher extends HttpServlet {
 		try {
 			courses = tDao.getCourses();
 			if (chosenCourse != null) { 
-				chosenCourseId = Integer.parseInt(chosenCourse);
-				//exams corresponding to selected course
-				exams = tDao.getExamDates(chosenCourseId);
-				//check permissions
-				CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
-				if(cDao.findCourse() == null) {
-					response.sendRedirect(homePage);
+				if (chosenCourse.isEmpty()) {
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
 					return;
-				}
-				String currTeacher = cDao.findOwnerTeacher();
-				if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
-					response.sendRedirect(homePage);
-					return;
+				}else {
+					chosenCourseId = Integer.parseInt(chosenCourse);
+					//exams corresponding to selected course
+					exams = tDao.getExamDates(chosenCourseId);
+					//check permissions
+					CourseDAO cDao = new CourseDAO(connection, chosenCourseId);
+					if(cDao.findCourse() == null) {
+						response.sendRedirect(homePage);
+						return;
+					}
+					String currTeacher = cDao.findOwnerTeacher();
+					if(currTeacher == null || !currTeacher.equals(user.getMatricola())) {
+						response.sendRedirect(homePage);
+						return;
+					}
 				}
 			}
 		} catch (SQLException e) {
