@@ -74,26 +74,27 @@ public class GoToEnrolledStudents extends HttpServlet {
         
         try {
 			chosenCourseId = Integer.parseInt(selectedCourse);
-			}catch(NumberFormatException e) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("Bad request, retry!");
-				return;
-			}
+		}catch(NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Number format error");
+			return;
+		}
         
 		List<ExamStudent> students = new ArrayList<ExamStudent>();
 		ExamDAO eDao = new ExamDAO(connection, chosenCourseId ,selectedDate);
 
 		//we set the order variable depending on the previous 
 		//value in order to invert the current order of variables
-		if(order == null) {
+		if(order == null){
 			order = "ASC";
 		}else if(order.equals("ASC")) {
 			order = "DESC";
 		}else if(order.equals("DESC")) {
 			order = "ASC";
-		}		
+		}else {
+			order = "ASC";
+		}
 		//we set a default order 
-		if(orderInput == null) {
+		if(orderInput == null || !orderInput.equals("result") || !orderInput.equals("name") || !orderInput.equals("surname") || !orderInput.equals("result") || !orderInput.equals("degree")) {
 			orderInput = "matricolaStudent";
 		}
 		
